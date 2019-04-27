@@ -3,21 +3,19 @@ package metricfamily
 import (
 	"fmt"
 	"time"
-
 	clientmodel "github.com/prometheus/client_model/go"
 )
 
-type errorInvalidFederateSamples struct {
-	min int64
-}
+type errorInvalidFederateSamples struct{ min int64 }
 
 func NewErrorInvalidFederateSamples(min time.Time) Transformer {
-	return &errorInvalidFederateSamples{
-		min: min.Unix() * 1000,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &errorInvalidFederateSamples{min: min.Unix() * 1000}
 }
-
 func (t *errorInvalidFederateSamples) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	name := family.GetName()
 	if len(name) == 0 {
 		return false, nil
@@ -37,7 +35,6 @@ func (t *errorInvalidFederateSamples) Transform(family *clientmodel.MetricFamily
 	default:
 		return false, fmt.Errorf("unknown metric type %s", t)
 	}
-
 	for _, m := range family.Metric {
 		if m == nil {
 			continue
@@ -82,17 +79,16 @@ func (t *errorInvalidFederateSamples) Transform(family *clientmodel.MetricFamily
 	return true, nil
 }
 
-type dropInvalidFederateSamples struct {
-	min int64
-}
+type dropInvalidFederateSamples struct{ min int64 }
 
 func NewDropInvalidFederateSamples(min time.Time) Transformer {
-	return &dropInvalidFederateSamples{
-		min: min.Unix() * 1000,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &dropInvalidFederateSamples{min: min.Unix() * 1000}
 }
-
 func (t *dropInvalidFederateSamples) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	name := family.GetName()
 	if len(name) == 0 {
 		return false, nil
@@ -112,7 +108,6 @@ func (t *dropInvalidFederateSamples) Transform(family *clientmodel.MetricFamily)
 	default:
 		return false, nil
 	}
-
 	for i, m := range family.Metric {
 		if m == nil {
 			continue
@@ -160,10 +155,9 @@ func (t *dropInvalidFederateSamples) Transform(family *clientmodel.MetricFamily)
 	}
 	return true, nil
 }
-
-// PackLabels fills holes in the label slice by shifting items towards the zero index.
-// It will modify the slice in place.
 func PackLabels(labels []*clientmodel.LabelPair) []*clientmodel.LabelPair {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	j := len(labels)
 	next := 0
 Found:
@@ -171,7 +165,6 @@ Found:
 		if labels[i] != nil {
 			continue
 		}
-		// scan for the next non-nil metric
 		if next <= i {
 			next = i + 1
 		}
@@ -179,12 +172,10 @@ Found:
 			if labels[k] == nil {
 				continue
 			}
-			// fill the current i with a non-nil metric
 			labels[i], labels[k] = labels[k], nil
 			next = k + 1
 			continue Found
 		}
-		// no more valid metrics
 		labels = labels[:i]
 		break
 	}

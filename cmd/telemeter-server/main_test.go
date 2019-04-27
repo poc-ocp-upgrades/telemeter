@@ -11,59 +11,51 @@ import (
 	"strings"
 	"testing"
 	"time"
-
 	"github.com/openshift/telemeter/pkg/metricfamily"
 	"github.com/openshift/telemeter/pkg/store"
 	"github.com/openshift/telemeter/pkg/store/memstore"
 	"github.com/openshift/telemeter/pkg/validate"
-
 	clientmodel "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
-
 	"github.com/openshift/telemeter/pkg/authorize"
 	"github.com/openshift/telemeter/pkg/http/server"
 )
 
 const (
-	sampleMetrics = `
+	sampleMetrics	= `
 openshift_build_info{app="openshift-web-console",gitCommit="d911956",gitVersion="v3.10.0-alpha.0+d911956-1-dirty",instance="172.16.0.14:8443",job="kubernetes-service-endpoints",kubernetes_name="webconsole",kubernetes_namespace="openshift-web-console",major="3",minor="10+"} 1 1526160578685
 openshift_build_info{gitCommit="32ac7fa",gitVersion="v3.10.0-alpha.0+32ac7fa-390",instance="10.142.0.3:1936",job="openshift-router",major="3",minor="10+"} 1 1526160588751
 openshift_build_info{gitCommit="865022c",gitVersion="v3.10.0-alpha.0+865022c-1018",instance="10.142.0.3:8443",job="kubernetes-apiservers",major="3",minor="10+"} 1 1526160587593
 openshift_build_info{gitCommit="865022c",gitVersion="v3.10.0-alpha.0+865022c-1018",instance="10.142.0.3:8444",job="kubernetes-controllers",major="3",minor="10+"} 1 1526160600448
 `
-	missingTimestamp = `
+	missingTimestamp	= `
 openshift_build_info{app="openshift-web-console",gitCommit="d911956",gitVersion="v3.10.0-alpha.0+d911956-1-dirty",instance="172.16.0.14:8443",job="kubernetes-service-endpoints",kubernetes_name="webconsole",kubernetes_namespace="openshift-web-console",major="3",minor="10+"} 1
 `
 )
 
 func TestPost(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	validator := validate.New("cluster", 0, 0)
 	labels := map[string]string{"cluster": "test"}
 	testPost(t, validator, withLabels(sort(mustReadString(sampleMetrics)), labels), withLabels(sort(mustReadString(sampleMetrics)), labels))
 }
-
 func TestPostError(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	validator := validate.New("cluster", 4096, 0)
 	ttl := 10 * time.Minute
 	store := memstore.New(ttl)
 	server := server.New(store, validator, nil, ttl)
 	labels := map[string]string{"cluster": "test"}
-
 	s := httptest.NewServer(fakeAuthorizeHandler(http.HandlerFunc(server.Post), &authorize.Client{ID: "test", Labels: labels}))
 	defer s.Close()
-
 	longName := strings.Repeat("abcd", 2048)
-
 	testCases := []struct {
-		name   string
-		send   []*clientmodel.MetricFamily
-		expect string
-	}{
-		{name: "without cluster ID", send: sort(mustReadString(sampleMetrics)), expect: "a required label is missing from the metric"},
-		{name: "out of order", send: withLabels(mustReadString(sampleMetrics), labels), expect: "are not in increasing timestamp order"},
-		{name: "lack timestamp", send: withLabels(mustReadString(missingTimestamp), labels), expect: "do not have a timestamp"},
-		{name: "too large", send: []*clientmodel.MetricFamily{{Name: &longName}}, expect: "incoming sample data is too long"},
-	}
+		name	string
+		send	[]*clientmodel.MetricFamily
+		expect	string
+	}{{name: "without cluster ID", send: sort(mustReadString(sampleMetrics)), expect: "a required label is missing from the metric"}, {name: "out of order", send: withLabels(mustReadString(sampleMetrics), labels), expect: "are not in increasing timestamp order"}, {name: "lack timestamp", send: withLabels(mustReadString(missingTimestamp), labels), expect: "do not have a timestamp"}, {name: "too large", send: []*clientmodel.MetricFamily{{Name: &longName}}, expect: "incoming sample data is too long"}}
 	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
 			code, body := mustPostError(s.URL, expfmt.FmtProtoDelim, test.send)
@@ -75,78 +67,69 @@ func TestPostError(t *testing.T) {
 			}
 		})
 	}
-
 }
-
 func testPost(t *testing.T, validator validate.Validator, send, expect []*clientmodel.MetricFamily) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
-
 	ttl := 10 * time.Minute
 	memStore := memstore.New(ttl)
 	server := server.New(memStore, validator, nil, ttl)
-
 	s := httptest.NewServer(fakeAuthorizeHandler(http.HandlerFunc(server.Post), &authorize.Client{ID: "test", Labels: map[string]string{"cluster": "test"}}))
 	defer s.Close()
-
 	mustPost(s.URL, expfmt.FmtProtoDelim, send)
-
 	var actual []*clientmodel.MetricFamily
 	ps, err := memStore.ReadMetrics(context.Background(), 0)
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	p := ps[0]
 	if p.PartitionKey != "test" {
 		t.Fatalf("unexpected partition key: %s", p.PartitionKey)
 	}
 	actual = p.Families
-
 	if e, a := metricsAsStringOrDie(expect), metricsAsStringOrDie(actual); e != a {
 		t.Errorf("expected:\n%s\nactual:\n%s", e, a)
 	}
 }
-
 func TestGet(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ttl := 10 * time.Minute
 	memStore := memstore.New(ttl)
 	validator := validate.New("cluster", 0, 0)
 	server := server.NewNonExpiring(memStore, validator, nil, ttl)
 	srv := httptest.NewServer(http.HandlerFunc(server.Get))
 	defer srv.Close()
-
-	if err := memStore.WriteMetrics(context.Background(), &store.PartitionedMetrics{
-		PartitionKey: "test",
-		Families:     mustReadString(sampleMetrics),
-	}); err != nil {
+	if err := memStore.WriteMetrics(context.Background(), &store.PartitionedMetrics{PartitionKey: "test", Families: mustReadString(sampleMetrics)}); err != nil {
 		t.Fatal(err)
 	}
-
 	actual := mustGet(srv.URL, expfmt.FmtText)
 	expected := mustReadString(sampleMetrics)
-
 	for _, mf := range expected {
 		for _, m := range mf.Metric {
 			m.TimestampMs = nil
 		}
 	}
-
 	if e, a := metricsAsStringOrDie(expected), metricsAsStringOrDie(actual); e != a {
 		t.Errorf("unexpected output metrics:\n%s\n%s", e, a)
 	}
 }
-
 func sort(families []*clientmodel.MetricFamily) []*clientmodel.MetricFamily {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_ = metricfamily.Filter(families, metricfamily.TransformerFunc(metricfamily.SortMetrics))
 	return metricfamily.Pack(families)
 }
-
 func withLabels(families []*clientmodel.MetricFamily, labels map[string]string) []*clientmodel.MetricFamily {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_ = metricfamily.Filter(families, metricfamily.NewLabel(labels, nil))
 	return families
 }
-
 func metricsAsStringOrDie(families []*clientmodel.MetricFamily) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	buf := &bytes.Buffer{}
 	encoder := expfmt.NewEncoder(buf, expfmt.FmtText)
 	for _, family := range families {
@@ -162,12 +145,14 @@ func metricsAsStringOrDie(families []*clientmodel.MetricFamily) string {
 	}
 	return buf.String()
 }
-
 func mustReadString(metrics string) []*clientmodel.MetricFamily {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return mustRead(bytes.NewBufferString(metrics), expfmt.FmtText)
 }
-
 func mustRead(r io.Reader, format expfmt.Format) []*clientmodel.MetricFamily {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	decoder := expfmt.NewDecoder(r, format)
 	families := make([]*clientmodel.MetricFamily, 0)
 	for {
@@ -182,8 +167,9 @@ func mustRead(r io.Reader, format expfmt.Format) []*clientmodel.MetricFamily {
 	}
 	return families
 }
-
 func mustPostError(addr string, format expfmt.Format, families []*clientmodel.MetricFamily) (int, string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	buf := &bytes.Buffer{}
 	encoder := expfmt.NewEncoder(buf, format)
 	for _, family := range families {
@@ -196,7 +182,6 @@ func mustPostError(addr string, format expfmt.Format, families []*clientmodel.Me
 		panic(err)
 	}
 	req.Header.Add("Content-Type", string(format))
-
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		panic(err)
@@ -208,8 +193,9 @@ func mustPostError(addr string, format expfmt.Format, families []*clientmodel.Me
 	resp.Body.Close()
 	return resp.StatusCode, string(body)
 }
-
 func mustPost(addr string, format expfmt.Format, families []*clientmodel.MetricFamily) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	buf := &bytes.Buffer{}
 	encoder := expfmt.NewEncoder(buf, format)
 	for _, family := range families {
@@ -222,7 +208,6 @@ func mustPost(addr string, format expfmt.Format, families []*clientmodel.MetricF
 		panic(err)
 	}
 	req.Header.Add("Content-Type", string(format))
-
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		panic(err)
@@ -233,24 +218,24 @@ func mustPost(addr string, format expfmt.Format, families []*clientmodel.MetricF
 	}
 	resp.Body.Close()
 }
-
 func mustGet(addr string, format expfmt.Format) []*clientmodel.MetricFamily {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	req, err := http.NewRequest("GET", addr, nil)
 	if err != nil {
 		panic(err)
 	}
 	req.Header.Add("Accept", string(format))
-
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		panic(err)
 	}
 	defer resp.Body.Close()
-
 	return mustRead(resp.Body, expfmt.ResponseFormat(resp.Header))
 }
-
 func fakeAuthorizeHandler(h http.Handler, client *authorize.Client) http.Handler {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		req = req.WithContext(authorize.WithClient(req.Context(), client))
 		h.ServeHTTP(w, req)

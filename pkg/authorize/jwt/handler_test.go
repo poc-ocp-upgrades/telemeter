@@ -8,35 +8,35 @@ import (
 	"errors"
 	"fmt"
 	"testing"
-
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-
 	"github.com/openshift/telemeter/pkg/authorize"
 )
 
 type statusCodeErr struct {
-	code int
-	err  string
+	code	int
+	err	string
 }
 
 func newStatusCodeErr(code int, err string) statusCodeErr {
-	return statusCodeErr{
-		code: code,
-		err:  err,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return statusCodeErr{code: code, err: err}
 }
-
 func (e statusCodeErr) Error() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return e.err
 }
-
 func (e statusCodeErr) HTTPStatusCode() int {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return e.code
 }
-
 func newTestClusterAuthorizer(subject string, err error) authorize.ClusterAuthorizer {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return authorize.ClusterAuthorizerFunc(func(token, cluster string) (string, error) {
 		return subject, err
 	})
@@ -45,6 +45,8 @@ func newTestClusterAuthorizer(subject string, err error) authorize.ClusterAuthor
 type requestBuilder struct{ *http.Request }
 
 func (r requestBuilder) WithHeaders(kvs ...string) requestBuilder {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	r.Header = make(http.Header)
 	for i := 0; i < len(kvs)/2; i++ {
 		k := kvs[i*2]
@@ -53,8 +55,9 @@ func (r requestBuilder) WithHeaders(kvs ...string) requestBuilder {
 	}
 	return r
 }
-
 func (r requestBuilder) WithForm(kvs ...string) requestBuilder {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	r.Form = make(url.Values)
 	for i := 0; i < len(kvs)/2; i++ {
 		k := kvs[i*2]
@@ -63,20 +66,16 @@ func (r requestBuilder) WithForm(kvs ...string) requestBuilder {
 	}
 	return r
 }
-
 func TestAuthorizeClusterHandler(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	partitionKey := "partitionKey"
-	labels := map[string]string{
-		"foo": "bar",
-		"baz": "qux",
-	}
+	labels := map[string]string{"foo": "bar", "baz": "qux"}
 	pk, err := rsa.GenerateKey(rand.Reader, 1024)
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	type checkFunc func(*httptest.ResponseRecorder) error
-
 	labelsEqual := func(labels map[string]string, id string) checkFunc {
 		return func(rec *httptest.ResponseRecorder) error {
 			var tr authorize.TokenResponse
@@ -99,11 +98,9 @@ func TestAuthorizeClusterHandler(t *testing.T) {
 					return fmt.Errorf("unexpected label in response: got '%s=%s', expected '%s=%s'", k, v, k, labels[k])
 				}
 			}
-
 			return nil
 		}
 	}
-
 	responseCodeIs := func(code int) checkFunc {
 		return func(rec *httptest.ResponseRecorder) error {
 			if got := rec.Code; got != code {
@@ -112,84 +109,13 @@ func TestAuthorizeClusterHandler(t *testing.T) {
 			return nil
 		}
 	}
-
 	for _, tc := range []struct {
-		name        string
-		signer      *Signer
-		clusterAuth authorize.ClusterAuthorizer
-		req         *http.Request
-		check       checkFunc
-	}{
-		{
-			name:  "invalid method",
-			req:   httptest.NewRequest("GET", "https://telemeter", nil),
-			check: responseCodeIs(405),
-		},
-
-		{
-			name:  "no auth header",
-			req:   httptest.NewRequest("POST", "https://telemeter", nil),
-			check: responseCodeIs(400),
-		},
-
-		{
-			name: "invalid auth header",
-			req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.
-				WithForm("id", "test").
-				WithHeaders("Authorization", "invalid").
-				Request,
-			check: responseCodeIs(401),
-		},
-
-		{
-			name: "cluster auth failed",
-			req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.
-				WithForm("id", "test").
-				WithHeaders("Authorization", "bearer invalid").
-				Request,
-			clusterAuth: newTestClusterAuthorizer("", errors.New("invalid")),
-			check:       responseCodeIs(500),
-		},
-		{
-			name: "cluster auth returned error",
-			req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.
-				WithForm("id", "test").
-				WithHeaders("Authorization", "bearer invalid").
-				Request,
-			clusterAuth: newTestClusterAuthorizer("", newStatusCodeErr(666, "some error")),
-			check:       responseCodeIs(666),
-		},
-		{
-			name: "signing failed",
-			req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.
-				WithForm("id", "test").
-				WithHeaders("Authorization", "bearer valid").
-				Request,
-			clusterAuth: newTestClusterAuthorizer("sub123", nil),
-			signer:      NewSigner("iss456", crypto.PrivateKey(nil)),
-			check:       responseCodeIs(500),
-		},
-		{
-			name: "cluster auth success",
-			req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.
-				WithForm("id", "test").
-				WithHeaders("Authorization", "bearer valid").
-				Request,
-			clusterAuth: newTestClusterAuthorizer("sub123", nil),
-			signer:      NewSigner("iss456", pk),
-			check:       responseCodeIs(200),
-		},
-		{
-			name: "labels equal success",
-			req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.
-				WithForm("id", "test").
-				WithHeaders("Authorization", "bearer valid").
-				Request,
-			clusterAuth: newTestClusterAuthorizer("sub123", nil),
-			signer:      NewSigner("iss456", pk),
-			check:       labelsEqual(labels, "test"),
-		},
-	} {
+		name		string
+		signer		*Signer
+		clusterAuth	authorize.ClusterAuthorizer
+		req		*http.Request
+		check		checkFunc
+	}{{name: "invalid method", req: httptest.NewRequest("GET", "https://telemeter", nil), check: responseCodeIs(405)}, {name: "no auth header", req: httptest.NewRequest("POST", "https://telemeter", nil), check: responseCodeIs(400)}, {name: "invalid auth header", req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.WithForm("id", "test").WithHeaders("Authorization", "invalid").Request, check: responseCodeIs(401)}, {name: "cluster auth failed", req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.WithForm("id", "test").WithHeaders("Authorization", "bearer invalid").Request, clusterAuth: newTestClusterAuthorizer("", errors.New("invalid")), check: responseCodeIs(500)}, {name: "cluster auth returned error", req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.WithForm("id", "test").WithHeaders("Authorization", "bearer invalid").Request, clusterAuth: newTestClusterAuthorizer("", newStatusCodeErr(666, "some error")), check: responseCodeIs(666)}, {name: "signing failed", req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.WithForm("id", "test").WithHeaders("Authorization", "bearer valid").Request, clusterAuth: newTestClusterAuthorizer("sub123", nil), signer: NewSigner("iss456", crypto.PrivateKey(nil)), check: responseCodeIs(500)}, {name: "cluster auth success", req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.WithForm("id", "test").WithHeaders("Authorization", "bearer valid").Request, clusterAuth: newTestClusterAuthorizer("sub123", nil), signer: NewSigner("iss456", pk), check: responseCodeIs(200)}, {name: "labels equal success", req: requestBuilder{httptest.NewRequest("POST", "https://telemeter", nil)}.WithForm("id", "test").WithHeaders("Authorization", "bearer valid").Request, clusterAuth: newTestClusterAuthorizer("sub123", nil), signer: NewSigner("iss456", pk), check: labelsEqual(labels, "test")}} {
 		t.Run(tc.name, func(t *testing.T) {
 			h := NewAuthorizeClusterHandler(partitionKey, 2, tc.signer, labels, tc.clusterAuth)
 			rec := httptest.NewRecorder()

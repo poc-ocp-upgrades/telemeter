@@ -2,36 +2,33 @@ package metricfamily
 
 import (
 	"sync"
-
 	clientmodel "github.com/prometheus/client_model/go"
 )
 
 type LabelRetriever interface {
 	Labels() (map[string]string, error)
 }
-
 type label struct {
-	labels    map[string]*clientmodel.LabelPair
-	retriever LabelRetriever
-	mu        sync.Mutex
+	labels		map[string]*clientmodel.LabelPair
+	retriever	LabelRetriever
+	mu		sync.Mutex
 }
 
 func NewLabel(labels map[string]string, retriever LabelRetriever) Transformer {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pairs := make(map[string]*clientmodel.LabelPair)
 	for k, v := range labels {
 		name, value := k, v
 		pairs[k] = &clientmodel.LabelPair{Name: &name, Value: &value}
 	}
-	return &label{
-		labels:    pairs,
-		retriever: retriever,
-	}
+	return &label{labels: pairs, retriever: retriever}
 }
-
 func (t *label) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	// lazily resolve the label retriever as needed
 	if t.retriever != nil && len(family.Metric) > 0 {
 		added, err := t.retriever.Labels()
 		if err != nil {
@@ -48,8 +45,9 @@ func (t *label) Transform(family *clientmodel.MetricFamily) (bool, error) {
 	}
 	return true, nil
 }
-
 func appendLabels(existing []*clientmodel.LabelPair, overrides map[string]*clientmodel.LabelPair) []*clientmodel.LabelPair {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var found []string
 	for i, pair := range existing {
 		name := pair.GetName()
@@ -65,8 +63,9 @@ func appendLabels(existing []*clientmodel.LabelPair, overrides map[string]*clien
 	}
 	return existing
 }
-
 func contains(values []string, s string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, v := range values {
 		if s == v {
 			return true

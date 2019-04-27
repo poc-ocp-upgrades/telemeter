@@ -7,9 +7,7 @@ import (
 	"math/rand"
 	"testing"
 	"time"
-
 	"reflect"
-
 	"github.com/hashicorp/memberlist"
 	"github.com/openshift/telemeter/pkg/store"
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,42 +15,57 @@ import (
 )
 
 type testStore struct {
-	readErr, writeErr error
-
-	partitionKey string
-	families     []*clientmodel.MetricFamily
+	readErr, writeErr	error
+	partitionKey		string
+	families		[]*clientmodel.MetricFamily
 }
 
 func (s *testStore) ReadMetrics(ctx context.Context, minTimestampMs int64) ([]*store.PartitionedMetrics, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return nil, s.readErr
 }
-
 func (s *testStore) WriteMetrics(_ context.Context, p *store.PartitionedMetrics) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	s.partitionKey = p.PartitionKey
 	s.families = p.Families
 	return s.writeErr
 }
 
 type testMemberlister struct {
-	numMembers      int
-	members         []*memberlist.Node
-	sendReliableErr error
-
-	sendReliableNode    *memberlist.Node
-	sendReliablePayload []byte
+	numMembers		int
+	members			[]*memberlist.Node
+	sendReliableErr		error
+	sendReliableNode	*memberlist.Node
+	sendReliablePayload	[]byte
 }
 
-func (l *testMemberlister) Members() []*memberlist.Node { return l.members }
-func (l *testMemberlister) NumMembers() int             { return l.numMembers }
-func (l *testMemberlister) Join([]string) (int, error)  { return 0, nil }
-
+func (l *testMemberlister) Members() []*memberlist.Node {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return l.members
+}
+func (l *testMemberlister) NumMembers() int {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return l.numMembers
+}
+func (l *testMemberlister) Join([]string) (int, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return 0, nil
+}
 func (l *testMemberlister) SendReliable(n *memberlist.Node, payload []byte) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	l.sendReliableNode = n
 	l.sendReliablePayload = payload
 	return l.sendReliableErr
 }
-
 func TestWriteMetrics(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pr := prometheus.NewRegistry()
 	g := prometheus.NewGauge(prometheus.GaugeOpts{Name: "test", Help: "test"})
 	pr.MustRegister(g)
@@ -61,9 +74,7 @@ func TestWriteMetrics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	type dynamicClusterCheck func(*DynamicCluster) error
-
 	nodeHasProblems := func(want bool, node string, now time.Time) dynamicClusterCheck {
 		return func(d *DynamicCluster) error {
 			if got := d.hasProblems(node, now); got != want {
@@ -72,9 +83,7 @@ func TestWriteMetrics(t *testing.T) {
 			return nil
 		}
 	}
-
 	type memberlisterCheck func(*testMemberlister) error
-
 	forwardedToNode := func(want *memberlist.Node) memberlisterCheck {
 		return func(m *testMemberlister) error {
 			if equal := reflect.DeepEqual(m.sendReliableNode, want); !equal {
@@ -83,9 +92,7 @@ func TestWriteMetrics(t *testing.T) {
 			return nil
 		}
 	}
-
 	type storeCheck func(*testStore) error
-
 	storeChecks := func(cs ...storeCheck) storeCheck {
 		return func(s *testStore) error {
 			for _, c := range cs {
@@ -96,7 +103,6 @@ func TestWriteMetrics(t *testing.T) {
 			return nil
 		}
 	}
-
 	writtenPartitionKeyIs := func(want string) storeCheck {
 		return func(store *testStore) error {
 			if got := store.partitionKey; got != want {
@@ -105,7 +111,6 @@ func TestWriteMetrics(t *testing.T) {
 			return nil
 		}
 	}
-
 	writtenFamiliesEqual := func(want []*clientmodel.MetricFamily) storeCheck {
 		return func(store *testStore) error {
 			if got := reflect.DeepEqual(store.families, want); !got {
@@ -114,14 +119,8 @@ func TestWriteMetrics(t *testing.T) {
 			return nil
 		}
 	}
-
-	noWrite := storeChecks(
-		writtenPartitionKeyIs(""),
-		writtenFamiliesEqual(nil),
-	)
-
+	noWrite := storeChecks(writtenPartitionKeyIs(""), writtenFamiliesEqual(nil))
 	type errCheck func(error) error
-
 	errIs := func(want error) errCheck {
 		return func(got error) error {
 			if got != want {
@@ -130,259 +129,52 @@ func TestWriteMetrics(t *testing.T) {
 			return nil
 		}
 	}
-
 	writeErr := errors.New("write error")
-
 	for _, tc := range []struct {
-		name, partitionKey string
-		localStore         *testStore
-		memberlister       *testMemberlister
-
-		initDynamicCluster func(*DynamicCluster)
-
-		writeMetricsCheck   errCheck
-		localStoreCheck     storeCheck
-		memberlisterCheck   memberlisterCheck
-		dynamicClusterCheck dynamicClusterCheck
-	}{
-		{
-			name: "1 ring member local write",
-
-			partitionKey: "a",
-			memberlister: &testMemberlister{
-				numMembers: 1,
-				members: []*memberlist.Node{
-					{Name: "local"},
-				},
-			},
-			localStore: &testStore{readErr: nil, writeErr: nil},
-
-			writeMetricsCheck: errIs(nil),
-			localStoreCheck: storeChecks(
-				writtenPartitionKeyIs("a"),
-				writtenFamiliesEqual(families),
-			),
-			memberlisterCheck: forwardedToNode(nil),
-		},
-		{
-			name: "1 ring member local write failure",
-
-			partitionKey: "a",
-			memberlister: &testMemberlister{
-				numMembers: 1,
-				members: []*memberlist.Node{
-					{Name: "local"},
-				},
-			},
-			localStore: &testStore{readErr: nil, writeErr: writeErr},
-
-			writeMetricsCheck: errIs(writeErr),
-			memberlisterCheck: forwardedToNode(nil),
-		},
-		{
-			name: "2 ring members unknown remote node",
-
-			partitionKey: "a",
-			memberlister: &testMemberlister{numMembers: 2},
-			localStore:   &testStore{readErr: nil, writeErr: nil},
-
-			writeMetricsCheck: errIs(nil),
-			localStoreCheck: storeChecks(
-				writtenPartitionKeyIs("a"),
-				writtenFamiliesEqual(families),
-			),
-			memberlisterCheck: forwardedToNode(nil),
-		},
-		{
-			name: "2 ring members local write",
-
-			partitionKey: "c",
-			memberlister: &testMemberlister{
-				numMembers: 2,
-				members: []*memberlist.Node{
-					{Name: "local"},
-					{Name: "remote"},
-				},
-			},
-			localStore: &testStore{readErr: nil, writeErr: nil},
-
-			writeMetricsCheck: errIs(nil),
-			localStoreCheck: storeChecks(
-				writtenPartitionKeyIs("c"),
-				writtenFamiliesEqual(families),
-			),
-			memberlisterCheck: forwardedToNode(nil),
-		},
-		{
-			name: "2 ring members remote forward",
-
-			partitionKey: "a",
-			memberlister: &testMemberlister{
-				numMembers: 2,
-				members: []*memberlist.Node{
-					{Name: "local"},
-					{Name: "remote"},
-				},
-			},
-			localStore: &testStore{readErr: nil, writeErr: nil},
-
-			writeMetricsCheck: errIs(nil),
-			localStoreCheck:   noWrite,
-			memberlisterCheck: forwardedToNode(&memberlist.Node{Name: "remote"}),
-		},
-		{
-			name: "2 ring members remote forward failure",
-
-			partitionKey: "a",
-			memberlister: &testMemberlister{
-				numMembers: 2,
-				members: []*memberlist.Node{
-					{Name: "local"},
-					{Name: "remote"},
-				},
-				sendReliableErr: writeErr,
-			},
-			localStore: &testStore{readErr: nil, writeErr: nil},
-
-			writeMetricsCheck: errIs(nil),
-			localStoreCheck:   noWrite,
-			memberlisterCheck: forwardedToNode(&memberlist.Node{Name: "remote"}),
-		},
-		{
-			name: "2 ring members remote forward not yet problematic",
-
-			partitionKey: "a",
-			memberlister: &testMemberlister{
-				numMembers: 2,
-				members: []*memberlist.Node{
-					{Name: "local"},
-					{Name: "remote"},
-				},
-				sendReliableErr: writeErr,
-			},
-			localStore: &testStore{readErr: nil, writeErr: nil},
-
-			initDynamicCluster: func(dc *DynamicCluster) {
-				dc.problemDetected("remote", time.Now().Add(-time.Minute))
-			},
-
-			writeMetricsCheck:   errIs(nil),
-			localStoreCheck:     noWrite,
-			memberlisterCheck:   forwardedToNode(&memberlist.Node{Name: "remote"}),
-			dynamicClusterCheck: nodeHasProblems(false, "remote", time.Now()),
-		},
-		{
-			name: "2 ring members remote forward problematic",
-
-			partitionKey: "a",
-			memberlister: &testMemberlister{
-				numMembers: 2,
-				members: []*memberlist.Node{
-					{Name: "local"},
-					{Name: "remote"},
-				},
-				sendReliableErr: writeErr,
-			},
-			localStore: &testStore{readErr: nil, writeErr: nil},
-
-			initDynamicCluster: func(dc *DynamicCluster) {
-				dc.problemDetected("remote", time.Now().Add(-time.Minute))
-				dc.problemDetected("remote", time.Now().Add(-3*time.Minute))
-			},
-
-			writeMetricsCheck: errIs(nil),
-			localStoreCheck: storeChecks(
-				writtenPartitionKeyIs("a"),
-				writtenFamiliesEqual(families),
-			),
-			memberlisterCheck:   forwardedToNode(nil),
-			dynamicClusterCheck: nodeHasProblems(false, "remote", time.Now()),
-		},
-		{
-			name: "2 ring members remote forward still problematic",
-
-			partitionKey: "a",
-			memberlister: &testMemberlister{
-				numMembers: 2,
-				members: []*memberlist.Node{
-					{Name: "local"},
-					{Name: "remote"},
-				},
-				sendReliableErr: writeErr,
-			},
-			localStore: &testStore{readErr: nil, writeErr: nil},
-
-			initDynamicCluster: func(dc *DynamicCluster) {
-				for i := 0; i < 4; i++ {
-					dc.problemDetected("remote", time.Now().Add(-time.Minute))
-				}
-			},
-
-			writeMetricsCheck: errIs(nil),
-			localStoreCheck: storeChecks(
-				writtenPartitionKeyIs("a"),
-				writtenFamiliesEqual(families),
-			),
-			memberlisterCheck:   forwardedToNode(nil),
-			dynamicClusterCheck: nodeHasProblems(true, "remote", time.Now()),
-		},
-		{
-			name: "2 ring members remote forward not problematic any more",
-
-			partitionKey: "a",
-			memberlister: &testMemberlister{
-				numMembers: 2,
-				members: []*memberlist.Node{
-					{Name: "local"},
-					{Name: "remote"},
-				},
-				sendReliableErr: writeErr,
-			},
-			localStore: &testStore{readErr: nil, writeErr: nil},
-
-			initDynamicCluster: func(dc *DynamicCluster) {
-				for i := 0; i < 4; i++ {
-					dc.problemDetected("remote", time.Now().Add(-2*time.Minute))
-				}
-			},
-
-			writeMetricsCheck:   errIs(nil),
-			localStoreCheck:     noWrite,
-			memberlisterCheck:   forwardedToNode(&memberlist.Node{Name: "remote"}),
-			dynamicClusterCheck: nodeHasProblems(false, "remote", time.Now()),
-		},
-	} {
+		name, partitionKey	string
+		localStore		*testStore
+		memberlister		*testMemberlister
+		initDynamicCluster	func(*DynamicCluster)
+		writeMetricsCheck	errCheck
+		localStoreCheck		storeCheck
+		memberlisterCheck	memberlisterCheck
+		dynamicClusterCheck	dynamicClusterCheck
+	}{{name: "1 ring member local write", partitionKey: "a", memberlister: &testMemberlister{numMembers: 1, members: []*memberlist.Node{{Name: "local"}}}, localStore: &testStore{readErr: nil, writeErr: nil}, writeMetricsCheck: errIs(nil), localStoreCheck: storeChecks(writtenPartitionKeyIs("a"), writtenFamiliesEqual(families)), memberlisterCheck: forwardedToNode(nil)}, {name: "1 ring member local write failure", partitionKey: "a", memberlister: &testMemberlister{numMembers: 1, members: []*memberlist.Node{{Name: "local"}}}, localStore: &testStore{readErr: nil, writeErr: writeErr}, writeMetricsCheck: errIs(writeErr), memberlisterCheck: forwardedToNode(nil)}, {name: "2 ring members unknown remote node", partitionKey: "a", memberlister: &testMemberlister{numMembers: 2}, localStore: &testStore{readErr: nil, writeErr: nil}, writeMetricsCheck: errIs(nil), localStoreCheck: storeChecks(writtenPartitionKeyIs("a"), writtenFamiliesEqual(families)), memberlisterCheck: forwardedToNode(nil)}, {name: "2 ring members local write", partitionKey: "c", memberlister: &testMemberlister{numMembers: 2, members: []*memberlist.Node{{Name: "local"}, {Name: "remote"}}}, localStore: &testStore{readErr: nil, writeErr: nil}, writeMetricsCheck: errIs(nil), localStoreCheck: storeChecks(writtenPartitionKeyIs("c"), writtenFamiliesEqual(families)), memberlisterCheck: forwardedToNode(nil)}, {name: "2 ring members remote forward", partitionKey: "a", memberlister: &testMemberlister{numMembers: 2, members: []*memberlist.Node{{Name: "local"}, {Name: "remote"}}}, localStore: &testStore{readErr: nil, writeErr: nil}, writeMetricsCheck: errIs(nil), localStoreCheck: noWrite, memberlisterCheck: forwardedToNode(&memberlist.Node{Name: "remote"})}, {name: "2 ring members remote forward failure", partitionKey: "a", memberlister: &testMemberlister{numMembers: 2, members: []*memberlist.Node{{Name: "local"}, {Name: "remote"}}, sendReliableErr: writeErr}, localStore: &testStore{readErr: nil, writeErr: nil}, writeMetricsCheck: errIs(nil), localStoreCheck: noWrite, memberlisterCheck: forwardedToNode(&memberlist.Node{Name: "remote"})}, {name: "2 ring members remote forward not yet problematic", partitionKey: "a", memberlister: &testMemberlister{numMembers: 2, members: []*memberlist.Node{{Name: "local"}, {Name: "remote"}}, sendReliableErr: writeErr}, localStore: &testStore{readErr: nil, writeErr: nil}, initDynamicCluster: func(dc *DynamicCluster) {
+		dc.problemDetected("remote", time.Now().Add(-time.Minute))
+	}, writeMetricsCheck: errIs(nil), localStoreCheck: noWrite, memberlisterCheck: forwardedToNode(&memberlist.Node{Name: "remote"}), dynamicClusterCheck: nodeHasProblems(false, "remote", time.Now())}, {name: "2 ring members remote forward problematic", partitionKey: "a", memberlister: &testMemberlister{numMembers: 2, members: []*memberlist.Node{{Name: "local"}, {Name: "remote"}}, sendReliableErr: writeErr}, localStore: &testStore{readErr: nil, writeErr: nil}, initDynamicCluster: func(dc *DynamicCluster) {
+		dc.problemDetected("remote", time.Now().Add(-time.Minute))
+		dc.problemDetected("remote", time.Now().Add(-3*time.Minute))
+	}, writeMetricsCheck: errIs(nil), localStoreCheck: storeChecks(writtenPartitionKeyIs("a"), writtenFamiliesEqual(families)), memberlisterCheck: forwardedToNode(nil), dynamicClusterCheck: nodeHasProblems(false, "remote", time.Now())}, {name: "2 ring members remote forward still problematic", partitionKey: "a", memberlister: &testMemberlister{numMembers: 2, members: []*memberlist.Node{{Name: "local"}, {Name: "remote"}}, sendReliableErr: writeErr}, localStore: &testStore{readErr: nil, writeErr: nil}, initDynamicCluster: func(dc *DynamicCluster) {
+		for i := 0; i < 4; i++ {
+			dc.problemDetected("remote", time.Now().Add(-time.Minute))
+		}
+	}, writeMetricsCheck: errIs(nil), localStoreCheck: storeChecks(writtenPartitionKeyIs("a"), writtenFamiliesEqual(families)), memberlisterCheck: forwardedToNode(nil), dynamicClusterCheck: nodeHasProblems(true, "remote", time.Now())}, {name: "2 ring members remote forward not problematic any more", partitionKey: "a", memberlister: &testMemberlister{numMembers: 2, members: []*memberlist.Node{{Name: "local"}, {Name: "remote"}}, sendReliableErr: writeErr}, localStore: &testStore{readErr: nil, writeErr: nil}, initDynamicCluster: func(dc *DynamicCluster) {
+		for i := 0; i < 4; i++ {
+			dc.problemDetected("remote", time.Now().Add(-2*time.Minute))
+		}
+	}, writeMetricsCheck: errIs(nil), localStoreCheck: noWrite, memberlisterCheck: forwardedToNode(&memberlist.Node{Name: "remote"}), dynamicClusterCheck: nodeHasProblems(false, "remote", time.Now())}} {
 		t.Run(tc.name, func(t *testing.T) {
 			dc := NewDynamic("local", tc.localStore)
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
-
 			dc.Start(tc.memberlister, ctx)
-
 			if tc.initDynamicCluster != nil {
 				tc.initDynamicCluster(dc)
 			}
 			dc.refreshRing()
-
-			if err := tc.writeMetricsCheck(dc.WriteMetrics(ctx, &store.PartitionedMetrics{
-				PartitionKey: tc.partitionKey,
-				Families:     families,
-			})); err != nil {
+			if err := tc.writeMetricsCheck(dc.WriteMetrics(ctx, &store.PartitionedMetrics{PartitionKey: tc.partitionKey, Families: families})); err != nil {
 				t.Error(err)
 			}
-
 			if tc.localStoreCheck != nil {
 				if err := tc.localStoreCheck(tc.localStore); err != nil {
 					t.Error(err)
 				}
 			}
-
 			if tc.dynamicClusterCheck != nil {
 				if err := tc.dynamicClusterCheck(dc); err != nil {
 					t.Error(err)
 				}
 			}
-
 			if tc.memberlisterCheck != nil {
 				if err := tc.memberlisterCheck(tc.memberlister); err != nil {
 					t.Error(err)

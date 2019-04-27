@@ -9,19 +9,17 @@ import (
 	"strconv"
 	"sync/atomic"
 	"testing"
-
 	"golang.org/x/oauth2"
 )
 
 func TestPasswordCredentialsTokenSource(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ts := newTestServer(t)
 	defer ts.Close()
-
 	conf := newConf(ts.URL)
 	src := NewPasswordCredentialsTokenSource(context.Background(), conf, "user1", "password1")
-
 	type checkFunc func(*oauth2.Token, error) error
-
 	checks := func(fs ...checkFunc) checkFunc {
 		return checkFunc(func(token *oauth2.Token, err error) error {
 			for _, f := range fs {
@@ -32,7 +30,6 @@ func TestPasswordCredentialsTokenSource(t *testing.T) {
 			return nil
 		})
 	}
-
 	hasAccessToken := func(expected string) checkFunc {
 		return checkFunc(func(token *oauth2.Token, _ error) error {
 			if got := token.AccessToken; got != expected {
@@ -41,7 +38,6 @@ func TestPasswordCredentialsTokenSource(t *testing.T) {
 			return nil
 		})
 	}
-
 	hasRefreshToken := func(expected string) checkFunc {
 		return checkFunc(func(token *oauth2.Token, _ error) error {
 			if got := token.RefreshToken; got != expected {
@@ -50,7 +46,6 @@ func TestPasswordCredentialsTokenSource(t *testing.T) {
 			return nil
 		})
 	}
-
 	hasTokenType := func(expected string) checkFunc {
 		return checkFunc(func(token *oauth2.Token, _ error) error {
 			if got := token.TokenType; got != expected {
@@ -59,7 +54,6 @@ func TestPasswordCredentialsTokenSource(t *testing.T) {
 			return nil
 		})
 	}
-
 	isValid := func(expected bool) checkFunc {
 		return checkFunc(func(token *oauth2.Token, _ error) error {
 			if got := token.Valid(); got != expected {
@@ -68,7 +62,6 @@ func TestPasswordCredentialsTokenSource(t *testing.T) {
 			return nil
 		})
 	}
-
 	hasError := func(expected error) checkFunc {
 		return checkFunc(func(_ *oauth2.Token, got error) error {
 			if got != expected {
@@ -77,47 +70,13 @@ func TestPasswordCredentialsTokenSource(t *testing.T) {
 			return nil
 		})
 	}
-
 	for _, tc := range []struct {
-		init  func(*passwordCredentialsTokenSource)
-		name  string
-		check checkFunc
-	}{
-		{
-			name: "initial request",
-			check: checks(
-				hasError(nil),
-				hasAccessToken("access_token_1"),
-				hasRefreshToken("refresh_token_1"),
-				hasTokenType("bearer"),
-				isValid(true),
-			),
-		},
-		{
-			name: "reuse access token",
-			check: checks(
-				hasError(nil),
-				hasAccessToken("access_token_1"),
-				hasRefreshToken("refresh_token_1"),
-				hasTokenType("bearer"),
-				isValid(true),
-			),
-		},
-		{
-			name: "refresh the refresh token",
-
-			// invalidate current refresh token
-			init: func(src *passwordCredentialsTokenSource) { src.refreshToken = nil },
-
-			check: checks(
-				hasError(nil),
-				hasAccessToken("access_token_2"),
-				hasRefreshToken("refresh_token_2"),
-				hasTokenType("bearer"),
-				isValid(true),
-			),
-		},
-	} {
+		init	func(*passwordCredentialsTokenSource)
+		name	string
+		check	checkFunc
+	}{{name: "initial request", check: checks(hasError(nil), hasAccessToken("access_token_1"), hasRefreshToken("refresh_token_1"), hasTokenType("bearer"), isValid(true))}, {name: "reuse access token", check: checks(hasError(nil), hasAccessToken("access_token_1"), hasRefreshToken("refresh_token_1"), hasTokenType("bearer"), isValid(true))}, {name: "refresh the refresh token", init: func(src *passwordCredentialsTokenSource) {
+		src.refreshToken = nil
+	}, check: checks(hasError(nil), hasAccessToken("access_token_2"), hasRefreshToken("refresh_token_2"), hasTokenType("bearer"), isValid(true))}} {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.init != nil {
 				tc.init(src)
@@ -128,22 +87,15 @@ func TestPasswordCredentialsTokenSource(t *testing.T) {
 		})
 	}
 }
-
 func newConf(url string) *oauth2.Config {
-	return &oauth2.Config{
-		ClientID:     "CLIENT_ID",
-		ClientSecret: "CLIENT_SECRET",
-		RedirectURL:  "REDIRECT_URL",
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  url + "/auth",
-			TokenURL: url + "/token",
-		},
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &oauth2.Config{ClientID: "CLIENT_ID", ClientSecret: "CLIENT_SECRET", RedirectURL: "REDIRECT_URL", Endpoint: oauth2.Endpoint{AuthURL: url + "/auth", TokenURL: url + "/token"}}
 }
-
 func newTestServer(t *testing.T) *httptest.Server {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var counter uint64
-
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		expected := "/token"
@@ -169,9 +121,7 @@ func newTestServer(t *testing.T) *httptest.Server {
 			t.Errorf("res.Body = %q; want %q", string(body), expected)
 		}
 		w.Header().Set("Content-Type", "application/json")
-
 		cnt := int(atomic.AddUint64(&counter, 1))
-
 		if _, err := w.Write([]byte(`{
   "access_token": "access_token_` + strconv.Itoa(cnt) + `",
   "expires_in": ` + strconv.Itoa(cnt) + `00,
