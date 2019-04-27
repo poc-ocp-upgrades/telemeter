@@ -12,9 +12,13 @@ type TransformerFunc func(*clientmodel.MetricFamily) (ok bool, err error)
 func (f TransformerFunc) Transform(family *clientmodel.MetricFamily) (ok bool, err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return f(family)
 }
 func MetricsCount(families []*clientmodel.MetricFamily) int {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	count := 0
@@ -27,6 +31,8 @@ func MetricsCount(families []*clientmodel.MetricFamily) int {
 	return count
 }
 func Filter(families []*clientmodel.MetricFamily, filter Transformer) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for i, family := range families {

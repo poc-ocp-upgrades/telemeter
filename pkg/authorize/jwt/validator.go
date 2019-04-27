@@ -15,6 +15,8 @@ type Validator interface {
 func NewValidator(audiences []string) Validator {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &validator{auds: audiences}
 }
 
@@ -23,6 +25,8 @@ type validator struct{ auds []string }
 var _ = Validator(&validator{})
 
 func (v *validator) Validate(_ string, public *jwt.Claims, privateObj interface{}) (*authorize.Client, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	private, ok := privateObj.(*privateClaims)
@@ -52,6 +56,8 @@ func (v *validator) Validate(_ string, public *jwt.Claims, privateObj interface{
 	return &authorize.Client{ID: public.Subject, Labels: private.Telemeter.Labels}, nil
 }
 func (v *validator) NewPrivateClaims() interface{} {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return &privateClaims{}

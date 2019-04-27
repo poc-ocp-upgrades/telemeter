@@ -15,6 +15,8 @@ import (
 func TestPasswordCredentialsTokenSource(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ts := newTestServer(t)
 	defer ts.Close()
 	conf := newConf(ts.URL)
@@ -90,9 +92,13 @@ func TestPasswordCredentialsTokenSource(t *testing.T) {
 func newConf(url string) *oauth2.Config {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &oauth2.Config{ClientID: "CLIENT_ID", ClientSecret: "CLIENT_SECRET", RedirectURL: "REDIRECT_URL", Endpoint: oauth2.Endpoint{AuthURL: url + "/auth", TokenURL: url + "/token"}}
 }
 func newTestServer(t *testing.T) *httptest.Server {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var counter uint64

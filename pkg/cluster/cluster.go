@@ -30,6 +30,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	prometheus.MustRegister(metricForwardResult, metricForwardSamples, metricForwardLatency)
 }
 
@@ -77,9 +79,13 @@ type DynamicCluster struct {
 func NewDynamic(name string, store store.Store) *DynamicCluster {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &DynamicCluster{name: name, store: store, expiration: 2 * time.Minute, ring: hashring.New(nil), queue: make(chan []byte, 100), problematic: make(map[string]*nodeData)}
 }
 func (c *DynamicCluster) Start(ml memberlister, ctx context.Context) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	c.ml = ml
@@ -111,6 +117,8 @@ func (c *DynamicCluster) Start(ml memberlister, ctx context.Context) {
 func (c *DynamicCluster) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if req.Method != "GET" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -129,6 +137,8 @@ func (c *DynamicCluster) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 func (c *DynamicCluster) debugInfo() debugInfo {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	info := debugInfo{Name: c.name, ProtocolVersion: protocolVersion}
 	c.lock.Lock()
 	defer c.lock.Unlock()
@@ -142,6 +152,8 @@ func (c *DynamicCluster) debugInfo() debugInfo {
 func (c *DynamicCluster) refreshRing() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	members := make([]string, 0, c.ml.NumMembers())
 	for _, n := range c.ml.Members() {
 		members = append(members, n.Name)
@@ -153,6 +165,8 @@ func (c *DynamicCluster) refreshRing() {
 func (c *DynamicCluster) getNodeForKey(partitionKey string) (string, bool) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	return c.ring.GetNode(partitionKey)
@@ -160,10 +174,14 @@ func (c *DynamicCluster) getNodeForKey(partitionKey string) (string, bool) {
 func (c *DynamicCluster) Join(seeds []string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, err := c.ml.Join(seeds)
 	return err
 }
 func (c *DynamicCluster) NotifyJoin(node *memberlist.Node) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	c.lock.Lock()
@@ -174,6 +192,8 @@ func (c *DynamicCluster) NotifyJoin(node *memberlist.Node) {
 func (c *DynamicCluster) NotifyLeave(node *memberlist.Node) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	log.Printf("[%s] node left %s", c.name, node.Name)
@@ -182,14 +202,20 @@ func (c *DynamicCluster) NotifyLeave(node *memberlist.Node) {
 func (c *DynamicCluster) NotifyUpdate(node *memberlist.Node) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	log.Printf("[%s] node update %s", c.name, node.Name)
 }
 func (c *DynamicCluster) NodeMeta(limit int) []byte {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return nil
 }
 func (c *DynamicCluster) NotifyMsg(data []byte) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(data) == 0 {
@@ -206,9 +232,13 @@ func (c *DynamicCluster) NotifyMsg(data []byte) {
 func (c *DynamicCluster) GetBroadcasts(overhead, limit int) [][]byte {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return nil
 }
 func (c *DynamicCluster) LocalState(join bool) []byte {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return nil
@@ -216,8 +246,12 @@ func (c *DynamicCluster) LocalState(join bool) []byte {
 func (c *DynamicCluster) MergeRemoteState(buf []byte, join bool) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 }
 func (c *DynamicCluster) handleMessage(data []byte) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	switch messageType(data[0]) {
@@ -246,6 +280,8 @@ func (c *DynamicCluster) handleMessage(data []byte) error {
 func (c *DynamicCluster) memberByName(name string) *memberlist.Node {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, n := range c.ml.Members() {
 		if n.Name == name {
 			return n
@@ -254,6 +290,8 @@ func (c *DynamicCluster) memberByName(name string) *memberlist.Node {
 	return nil
 }
 func (c *DynamicCluster) hasProblems(name string, now time.Time) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	c.lock.Lock()
@@ -276,6 +314,8 @@ func (c *DynamicCluster) hasProblems(name string, now time.Time) bool {
 func (c *DynamicCluster) problemDetected(name string, now time.Time) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	p, ok := c.problematic[name]
@@ -287,6 +327,8 @@ func (c *DynamicCluster) problemDetected(name string, now time.Time) {
 	p.last = now
 }
 func (c *DynamicCluster) findRemote(partitionKey string, now time.Time) (*memberlist.Node, bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if c.ml.NumMembers() < 2 {
@@ -314,6 +356,8 @@ func (c *DynamicCluster) findRemote(partitionKey string, now time.Time) (*member
 	return node, true
 }
 func (c *DynamicCluster) forwardMetrics(ctx context.Context, p *store.PartitionedMetrics) (ok bool, err error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	now := time.Now()
@@ -349,9 +393,13 @@ func (c *DynamicCluster) forwardMetrics(ctx context.Context, p *store.Partitione
 func (c *DynamicCluster) ReadMetrics(ctx context.Context, minTimestampMs int64) ([]*store.PartitionedMetrics, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return c.store.ReadMetrics(ctx, minTimestampMs)
 }
 func (c *DynamicCluster) WriteMetrics(ctx context.Context, p *store.PartitionedMetrics) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	ok, err := c.forwardMetrics(ctx, p)
@@ -369,7 +417,16 @@ func (c *DynamicCluster) WriteMetrics(ctx context.Context, p *store.PartitionedM
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

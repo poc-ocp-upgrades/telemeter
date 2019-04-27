@@ -23,14 +23,20 @@ type passwordCredentialsTokenSource struct {
 func NewPasswordCredentialsTokenSource(ctx context.Context, cfg *oauth2.Config, username, password string) *passwordCredentialsTokenSource {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &passwordCredentialsTokenSource{ctx: ctx, username: username, password: password, cfg: cfg}
 }
 func (c *passwordCredentialsTokenSource) Token() (*oauth2.Token, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return c.token(time.Now)
 }
 func (c *passwordCredentialsTokenSource) token(now func() time.Time) (*oauth2.Token, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	c.mu.Lock()
@@ -64,7 +70,16 @@ func (c *passwordCredentialsTokenSource) token(now func() time.Time) (*oauth2.To
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

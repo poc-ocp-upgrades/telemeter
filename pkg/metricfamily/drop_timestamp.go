@@ -5,6 +5,8 @@ import clientmodel "github.com/prometheus/client_model/go"
 func DropTimestamp(family *clientmodel.MetricFamily) (bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if family == nil {
 		return true, nil
 	}

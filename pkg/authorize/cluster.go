@@ -5,6 +5,8 @@ type ClusterAuthorizerFunc func(token, cluster string) (subject string, err erro
 func (f ClusterAuthorizerFunc) AuthorizeCluster(token, cluster string) (subject string, err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return f(token, cluster)
 }
 

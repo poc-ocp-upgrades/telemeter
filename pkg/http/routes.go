@@ -10,6 +10,8 @@ import (
 func DebugRoutes(mux *http.ServeMux) *http.ServeMux {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	mux.HandleFunc("/debug/pprof/", pprof.Index)
 	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
@@ -19,6 +21,8 @@ func DebugRoutes(mux *http.ServeMux) *http.ServeMux {
 	return mux
 }
 func HealthRoutes(mux *http.ServeMux) *http.ServeMux {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, req *http.Request) {
@@ -32,10 +36,14 @@ func HealthRoutes(mux *http.ServeMux) *http.ServeMux {
 func MetricRoutes(mux *http.ServeMux) *http.ServeMux {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	mux.Handle("/metrics", promhttp.Handler())
 	return mux
 }
 func ReloadRoutes(mux *http.ServeMux, reload func() error) *http.ServeMux {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	mux.HandleFunc("/-/reload", func(w http.ResponseWriter, req *http.Request) {

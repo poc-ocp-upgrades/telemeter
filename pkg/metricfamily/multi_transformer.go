@@ -12,6 +12,8 @@ type MultiTransformer struct {
 func (a *MultiTransformer) With(t Transformer) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if t != nil {
 		a.transformers = append(a.transformers, t)
 	}
@@ -19,9 +21,13 @@ func (a *MultiTransformer) With(t Transformer) {
 func (a *MultiTransformer) WithFunc(f func() Transformer) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	a.builderFuncs = append(a.builderFuncs, f)
 }
 func (a MultiTransformer) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var ts []Transformer

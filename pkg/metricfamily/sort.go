@@ -8,6 +8,8 @@ import (
 func SortMetrics(family *clientmodel.MetricFamily) (bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	sort.Sort(MetricsByTimestamp(family.Metric))
 	return true, nil
 }
@@ -17,9 +19,13 @@ type MetricsByTimestamp []*clientmodel.Metric
 func (m MetricsByTimestamp) Len() int {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return len(m)
 }
 func (m MetricsByTimestamp) Less(i int, j int) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	a, b := m[i], m[j]
@@ -40,9 +46,13 @@ func (m MetricsByTimestamp) Less(i int, j int) bool {
 func (m MetricsByTimestamp) Swap(i int, j int) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	m[i], m[j] = m[j], m[i]
 }
 func MergeSortedWithTimestamps(families []*clientmodel.MetricFamily) []*clientmodel.MetricFamily {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var dst *clientmodel.MetricFamily
@@ -105,9 +115,13 @@ type PackedFamilyWithTimestampsByName []*clientmodel.MetricFamily
 func (families PackedFamilyWithTimestampsByName) Len() int {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return len(families)
 }
 func (families PackedFamilyWithTimestampsByName) Less(i int, j int) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	a, b := families[i].GetName(), families[j].GetName()
@@ -121,6 +135,8 @@ func (families PackedFamilyWithTimestampsByName) Less(i int, j int) bool {
 	return tA < tB
 }
 func (families PackedFamilyWithTimestampsByName) Swap(i int, j int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	families[i], families[j] = families[j], families[i]

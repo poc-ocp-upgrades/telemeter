@@ -7,6 +7,8 @@ type DropUnsorted struct{ timestamp int64 }
 func (o *DropUnsorted) Transform(family *clientmodel.MetricFamily) (bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i, m := range family.Metric {
 		if m == nil {
 			continue

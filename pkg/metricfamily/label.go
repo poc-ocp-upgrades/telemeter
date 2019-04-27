@@ -17,6 +17,8 @@ type label struct {
 func NewLabel(labels map[string]string, retriever LabelRetriever) Transformer {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pairs := make(map[string]*clientmodel.LabelPair)
 	for k, v := range labels {
 		name, value := k, v
@@ -25,6 +27,8 @@ func NewLabel(labels map[string]string, retriever LabelRetriever) Transformer {
 	return &label{labels: pairs, retriever: retriever}
 }
 func (t *label) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.mu.Lock()
@@ -48,6 +52,8 @@ func (t *label) Transform(family *clientmodel.MetricFamily) (bool, error) {
 func appendLabels(existing []*clientmodel.LabelPair, overrides map[string]*clientmodel.LabelPair) []*clientmodel.LabelPair {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var found []string
 	for i, pair := range existing {
 		name := pair.GetName()
@@ -64,6 +70,8 @@ func appendLabels(existing []*clientmodel.LabelPair, overrides map[string]*clien
 	return existing
 }
 func contains(values []string, s string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, v := range values {

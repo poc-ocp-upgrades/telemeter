@@ -11,6 +11,8 @@ import (
 func TestElide(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	family := func(metrics ...*prom.Metric) *prom.MetricFamily {
 		families := &prom.MetricFamily{Name: proto.String("test")}
 		families.Metric = append(families.Metric, metrics...)

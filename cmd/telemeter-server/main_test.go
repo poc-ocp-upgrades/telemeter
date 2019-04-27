@@ -36,11 +36,15 @@ openshift_build_info{app="openshift-web-console",gitCommit="d911956",gitVersion=
 func TestPost(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	validator := validate.New("cluster", 0, 0)
 	labels := map[string]string{"cluster": "test"}
 	testPost(t, validator, withLabels(sort(mustReadString(sampleMetrics)), labels), withLabels(sort(mustReadString(sampleMetrics)), labels))
 }
 func TestPostError(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	validator := validate.New("cluster", 4096, 0)
@@ -71,6 +75,8 @@ func TestPostError(t *testing.T) {
 func testPost(t *testing.T, validator validate.Validator, send, expect []*clientmodel.MetricFamily) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	ttl := 10 * time.Minute
 	memStore := memstore.New(ttl)
@@ -93,6 +99,8 @@ func testPost(t *testing.T, validator validate.Validator, send, expect []*client
 	}
 }
 func TestGet(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	ttl := 10 * time.Minute
@@ -118,16 +126,22 @@ func TestGet(t *testing.T) {
 func sort(families []*clientmodel.MetricFamily) []*clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_ = metricfamily.Filter(families, metricfamily.TransformerFunc(metricfamily.SortMetrics))
 	return metricfamily.Pack(families)
 }
 func withLabels(families []*clientmodel.MetricFamily, labels map[string]string) []*clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_ = metricfamily.Filter(families, metricfamily.NewLabel(labels, nil))
 	return families
 }
 func metricsAsStringOrDie(families []*clientmodel.MetricFamily) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	buf := &bytes.Buffer{}
@@ -148,9 +162,13 @@ func metricsAsStringOrDie(families []*clientmodel.MetricFamily) string {
 func mustReadString(metrics string) []*clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return mustRead(bytes.NewBufferString(metrics), expfmt.FmtText)
 }
 func mustRead(r io.Reader, format expfmt.Format) []*clientmodel.MetricFamily {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	decoder := expfmt.NewDecoder(r, format)
@@ -168,6 +186,8 @@ func mustRead(r io.Reader, format expfmt.Format) []*clientmodel.MetricFamily {
 	return families
 }
 func mustPostError(addr string, format expfmt.Format, families []*clientmodel.MetricFamily) (int, string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	buf := &bytes.Buffer{}
@@ -196,6 +216,8 @@ func mustPostError(addr string, format expfmt.Format, families []*clientmodel.Me
 func mustPost(addr string, format expfmt.Format, families []*clientmodel.MetricFamily) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	buf := &bytes.Buffer{}
 	encoder := expfmt.NewEncoder(buf, format)
 	for _, family := range families {
@@ -221,6 +243,8 @@ func mustPost(addr string, format expfmt.Format, families []*clientmodel.MetricF
 func mustGet(addr string, format expfmt.Format) []*clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	req, err := http.NewRequest("GET", addr, nil)
 	if err != nil {
 		panic(err)
@@ -234,6 +258,8 @@ func mustGet(addr string, format expfmt.Format) []*clientmodel.MetricFamily {
 	return mustRead(resp.Body, expfmt.ResponseFormat(resp.Header))
 }
 func fakeAuthorizeHandler(h http.Handler, client *authorize.Client) http.Handler {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {

@@ -9,6 +9,8 @@ import (
 func TestDropTimestamp(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	family := func(name string, metrics ...*clientmodel.Metric) *clientmodel.MetricFamily {
 		families := &clientmodel.MetricFamily{Name: &name}
 		families.Metric = append(families.Metric, metrics...)

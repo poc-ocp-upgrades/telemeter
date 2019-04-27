@@ -27,6 +27,8 @@ type tokenStore struct {
 func (t *tokenStore) Load(endpoint *url.URL, initialToken string, rt http.RoundTripper) (string, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	if len(t.value) > 0 && (t.expires.IsZero() || t.expires.After(time.Now())) {
@@ -67,6 +69,8 @@ func (t *tokenStore) Load(endpoint *url.URL, initialToken string, rt http.RoundT
 func (t *tokenStore) Invalidate(token string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	if token == t.value {
@@ -76,6 +80,8 @@ func (t *tokenStore) Invalidate(token string) {
 	}
 }
 func (t *tokenStore) Labels() (map[string]string, bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.lock.Lock()
@@ -90,6 +96,8 @@ func (t *tokenStore) Labels() (map[string]string, bool) {
 	return labels, true
 }
 func parseTokenFromBody(r io.Reader, limitBytes int64) (*TokenResponse, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	data, err := ioutil.ReadAll(io.LimitReader(r, limitBytes))

@@ -16,9 +16,13 @@ type ServerRotatingRoundTripper struct {
 func NewServerRotatingRoundTripper(initialToken string, endpoint *url.URL, rt http.RoundTripper) *ServerRotatingRoundTripper {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &ServerRotatingRoundTripper{initialToken: initialToken, endpoint: endpoint, wrapper: rt}
 }
 func (rt *ServerRotatingRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	token, err := rt.tokenStore.Load(rt.endpoint, rt.initialToken, rt.wrapper)
@@ -33,6 +37,8 @@ func (rt *ServerRotatingRoundTripper) RoundTrip(req *http.Request) (*http.Respon
 	return resp, err
 }
 func (rt *ServerRotatingRoundTripper) Labels() (map[string]string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_, err := rt.tokenStore.Load(rt.endpoint, rt.initialToken, rt.wrapper)

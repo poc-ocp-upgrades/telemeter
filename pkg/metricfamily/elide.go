@@ -9,6 +9,8 @@ type elide struct{ labelSet map[string]struct{} }
 func NewElide(labels ...string) *elide {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	labelSet := make(map[string]struct{})
 	for i := range labels {
 		labelSet[labels[i]] = struct{}{}
@@ -16,6 +18,8 @@ func NewElide(labels ...string) *elide {
 	return &elide{labelSet}
 }
 func (t *elide) Transform(family *prom.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if family == nil || len(family.Metric) == 0 {

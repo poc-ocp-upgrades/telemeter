@@ -16,6 +16,8 @@ import (
 func TestCleanup(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	type checkFunc func(testData []*store.PartitionedMetrics, s *memoryStore) error
 	checks := func(cs ...checkFunc) checkFunc {
 		return func(testData []*store.PartitionedMetrics, s *memoryStore) error {
@@ -73,6 +75,8 @@ func TestCleanup(t *testing.T) {
 	}
 }
 func TestReadWriteMetrics(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	testData := partitionedMetrics{partitionKey: "foo", start: time.Time{}, span: 30 * time.Minute, families: 10, values: 10}.build()
@@ -138,6 +142,8 @@ type partitionedMetrics struct {
 }
 
 func (pm partitionedMetrics) build() *store.PartitionedMetrics {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tDelta := time.Duration(float64(pm.span) / float64(pm.values-1))

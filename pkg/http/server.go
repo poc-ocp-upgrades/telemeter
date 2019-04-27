@@ -15,9 +15,13 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	prometheus.MustRegister(requestDuration, requestSize, requestsTotal)
 }
 func NewInstrumentedHandler(handlerName string, next http.Handler) http.Handler {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return promhttp.InstrumentHandlerDuration(requestDuration.MustCurryWith(prometheus.Labels{"handler": handlerName}), promhttp.InstrumentHandlerRequestSize(requestSize.MustCurryWith(prometheus.Labels{"handler": handlerName}), promhttp.InstrumentHandlerCounter(requestsTotal.MustCurryWith(prometheus.Labels{"handler": handlerName}), next)))

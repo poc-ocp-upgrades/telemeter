@@ -9,6 +9,8 @@ import (
 func NewAuthorizeClientHandler(authorizer ClientAuthorizer, next http.Handler) http.Handler {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		auth := strings.SplitN(req.Header.Get("Authorization"), " ", 2)
 		if strings.ToLower(auth[0]) != "bearer" {

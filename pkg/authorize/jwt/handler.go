@@ -21,9 +21,13 @@ type authorizeClusterHandler struct {
 func NewAuthorizeClusterHandler(partitionKey string, expireInSeconds int64, signer *Signer, labels map[string]string, ca authorize.ClusterAuthorizer) *authorizeClusterHandler {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &authorizeClusterHandler{partitionKey: partitionKey, expireInSeconds: expireInSeconds, signer: signer, labels: labels, clusterAuth: ca}
 }
 func (a *authorizeClusterHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if req.Method != "POST" {

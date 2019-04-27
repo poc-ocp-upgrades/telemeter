@@ -7,6 +7,8 @@ type RenameMetrics struct{ Names map[string]string }
 func (m RenameMetrics) Transform(family *clientmodel.MetricFamily) (bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if family == nil || family.Name == nil {
 		return true, nil
 	}

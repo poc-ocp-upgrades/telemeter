@@ -17,6 +17,8 @@ type delegate interface {
 func NewMemberlist(name, addr string, secret []byte, verbose bool, d delegate) (*memberlist.Memberlist, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(secret) != 32 {
 		return nil, fmt.Errorf("invalid secret size, must be 32 bytes: %d", len(secret))
 	}

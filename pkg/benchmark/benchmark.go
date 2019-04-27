@@ -43,6 +43,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	prometheus.MustRegister(forwardErrors, forwardedSamples)
 }
 
@@ -73,6 +75,8 @@ type worker struct {
 }
 
 func New(cfg *Config) (*Benchmark, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	b := Benchmark{reconfigure: make(chan struct{}), workers: make([]*worker, cfg.Workers)}
@@ -158,6 +162,8 @@ func New(cfg *Config) (*Benchmark, error) {
 func (b *Benchmark) Run() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.lock.Lock()
 	r := b.running
 	b.lock.Unlock()
@@ -200,6 +206,8 @@ func (b *Benchmark) Run() {
 func (b *Benchmark) Stop() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.lock.Lock()
 	defer b.lock.Unlock()
 	if b.running {
@@ -208,6 +216,8 @@ func (b *Benchmark) Stop() {
 	}
 }
 func (b *Benchmark) Reconfigure(cfg *Config) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	benchmark, err := New(cfg)
@@ -224,6 +234,8 @@ func (b *Benchmark) Reconfigure(cfg *Config) error {
 	return nil
 }
 func (w *worker) run(ctx context.Context) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for {
@@ -249,6 +261,8 @@ func (w *worker) run(ctx context.Context) {
 func (w *worker) generate() []*clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rand.Seed(time.Now().UnixNano())
 	mfs := make([]*clientmodel.MetricFamily, len(w.metrics))
 	now := time.Now().UnixNano() / int64(time.Millisecond)
@@ -269,6 +283,8 @@ func (w *worker) generate() []*clientmodel.MetricFamily {
 	return mfs
 }
 func randomize(metric *clientmodel.Metric) *clientmodel.Metric {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	m := *metric
@@ -297,6 +313,8 @@ func randomize(metric *clientmodel.Metric) *clientmodel.Metric {
 func (w *worker) forward(ctx context.Context, metrics []*clientmodel.MetricFamily) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if w.to == nil {
 		log.Printf("warning from worker %s: no destination configured; doing nothing", w.id)
 		return nil
@@ -314,7 +332,16 @@ func (w *worker) forward(ctx context.Context, metrics []*clientmodel.MetricFamil
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

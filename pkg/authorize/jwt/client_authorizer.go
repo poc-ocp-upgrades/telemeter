@@ -12,6 +12,8 @@ import (
 func NewClientAuthorizer(issuer string, keys []crypto.PublicKey, v Validator) *clientAuthorizer {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &clientAuthorizer{iss: issuer, keys: keys, validator: v}
 }
 
@@ -22,6 +24,8 @@ type clientAuthorizer struct {
 }
 
 func (j *clientAuthorizer) AuthorizeClient(tokenData string) (*authorize.Client, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if !j.hasCorrectIssuer(tokenData) {
@@ -55,6 +59,8 @@ func (j *clientAuthorizer) AuthorizeClient(tokenData string) (*authorize.Client,
 	return client, true, nil
 }
 func (j *clientAuthorizer) hasCorrectIssuer(tokenData string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	parts := strings.SplitN(tokenData, ".", 4)

@@ -29,9 +29,13 @@ type authorizer struct {
 func NewAuthorizer(c *http.Client, to *url.URL) *authorizer {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &authorizer{to: to, client: c}
 }
 func (a *authorizer) AuthorizeCluster(token, cluster string) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	regReq := &clusterRegistration{ClusterID: cluster, AuthorizationToken: token}
@@ -91,6 +95,8 @@ func (a *authorizer) AuthorizeCluster(token, cluster string) (string, error) {
 func tryReadResponse(r io.Reader, limitBytes int64) (*clusterRegistration, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	body, err := ioutil.ReadAll(io.LimitReader(r, limitBytes))
 	if err != nil {
 		return nil, err
@@ -110,9 +116,13 @@ type errWithCode struct {
 func (e errWithCode) HTTPStatusCode() int {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return e.code
 }
 func tryLogBody(r io.Reader, limitBytes int64, format string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	body, _ := ioutil.ReadAll(io.LimitReader(r, limitBytes))

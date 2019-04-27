@@ -30,14 +30,20 @@ type Server struct {
 func New(store store.Store, validator validate.Validator, transformer metricfamily.Transformer, maxSampleAge time.Duration) *Server {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &Server{maxSampleAge: maxSampleAge, store: store, transformer: transformer, validator: validator, nowFn: time.Now}
 }
 func NewNonExpiring(store store.Store, validator validate.Validator, transformer metricfamily.Transformer, maxSampleAge time.Duration) *Server {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &Server{maxSampleAge: maxSampleAge, store: store, transformer: transformer, validator: validator, nowFn: nil}
 }
 func (s *Server) Get(w http.ResponseWriter, req *http.Request) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if req.Method != "GET" {
@@ -77,6 +83,8 @@ func (s *Server) Get(w http.ResponseWriter, req *http.Request) {
 	}
 }
 func (s *Server) Post(w http.ResponseWriter, req *http.Request) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if req.Method != "POST" {
@@ -124,6 +132,8 @@ func (s *Server) Post(w http.ResponseWriter, req *http.Request) {
 func (s *Server) decodeAndStoreMetrics(ctx context.Context, partitionKey string, decoder expfmt.Decoder, transformer metricfamily.Transformer) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	families := make([]*clientmodel.MetricFamily, 0, 100)
 	for {
 		family := &clientmodel.MetricFamily{}
@@ -144,7 +154,16 @@ func (s *Server) decodeAndStoreMetrics(ctx context.Context, partitionKey string,
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

@@ -11,9 +11,13 @@ type errorInvalidFederateSamples struct{ min int64 }
 func NewErrorInvalidFederateSamples(min time.Time) Transformer {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &errorInvalidFederateSamples{min: min.Unix() * 1000}
 }
 func (t *errorInvalidFederateSamples) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	name := family.GetName()
@@ -84,9 +88,13 @@ type dropInvalidFederateSamples struct{ min int64 }
 func NewDropInvalidFederateSamples(min time.Time) Transformer {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &dropInvalidFederateSamples{min: min.Unix() * 1000}
 }
 func (t *dropInvalidFederateSamples) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	name := family.GetName()
@@ -156,6 +164,8 @@ func (t *dropInvalidFederateSamples) Transform(family *clientmodel.MetricFamily)
 	return true, nil
 }
 func PackLabels(labels []*clientmodel.LabelPair) []*clientmodel.LabelPair {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	j := len(labels)

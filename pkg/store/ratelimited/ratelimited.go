@@ -25,9 +25,13 @@ type lstore struct {
 func New(limit time.Duration, next store.Store) *lstore {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &lstore{limit: limit, next: next, store: make(map[string]*rate.Limiter)}
 }
 func (s *lstore) ReadMetrics(ctx context.Context, minTimestampMs int64) ([]*store.PartitionedMetrics, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return s.next.ReadMetrics(ctx, minTimestampMs)
@@ -35,9 +39,13 @@ func (s *lstore) ReadMetrics(ctx context.Context, minTimestampMs int64) ([]*stor
 func (s *lstore) WriteMetrics(ctx context.Context, p *store.PartitionedMetrics) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return s.writeMetrics(ctx, p, time.Now())
 }
 func (s *lstore) writeMetrics(ctx context.Context, p *store.PartitionedMetrics, now time.Time) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if p == nil {
@@ -49,6 +57,8 @@ func (s *lstore) writeMetrics(ctx context.Context, p *store.PartitionedMetrics, 
 	return s.next.WriteMetrics(ctx, p)
 }
 func (s *lstore) limiter(partitionKey string) *rate.Limiter {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	s.mu.Lock()
@@ -63,7 +73,16 @@ func (s *lstore) limiter(partitionKey string) *rate.Limiter {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

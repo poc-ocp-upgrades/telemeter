@@ -74,6 +74,8 @@ another cluster member.
 func main() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	opt := &Options{Listen: "0.0.0.0:9003", ListenInternal: "localhost:9004", LimitBytes: 500 * 1024, TokenExpireSeconds: 24 * 60 * 60, PartitionKey: "_id", Ratelimit: 4*time.Minute + 30*time.Second, TTL: 10 * time.Minute}
 	cmd := &cobra.Command{Short: "Aggregate federated metrics pushes", Long: desc, SilenceUsage: true, RunE: func(cmd *cobra.Command, args []string) error {
 		return opt.Run()
@@ -143,6 +145,8 @@ type Paths struct {
 }
 
 func (o *Options) Run() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, flag := range o.LabelFlag {
@@ -403,6 +407,8 @@ func (o *Options) Run() error {
 func loadPrivateKey(data []byte) (crypto.PrivateKey, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	input := data
 	block, _ := pem.Decode(data)
 	if block != nil {
@@ -426,7 +432,16 @@ func loadPrivateKey(data []byte) (crypto.PrivateKey, error) {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

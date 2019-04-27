@@ -11,6 +11,8 @@ type whitelist [][]*labels.Matcher
 func NewWhitelist(rules []string) (Transformer, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var ms [][]*labels.Matcher
 	for i := range rules {
 		matchers, err := promql.ParseMetricSelector(rules[i])
@@ -22,6 +24,8 @@ func NewWhitelist(rules []string) (Transformer, error) {
 	return whitelist(ms), nil
 }
 func (t whitelist) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var ok bool
@@ -41,6 +45,8 @@ Metric:
 	return ok, nil
 }
 func match(name string, metric *clientmodel.Metric, matchers ...*labels.Matcher) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 Matcher:

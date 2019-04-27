@@ -5,6 +5,8 @@ import clientmodel "github.com/prometheus/client_model/go"
 func PackMetrics(family *clientmodel.MetricFamily) (bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	metrics := family.Metric
 	j := len(metrics)
 	next := 0
@@ -30,6 +32,8 @@ Found:
 	return len(family.Metric) > 0, nil
 }
 func Pack(families []*clientmodel.MetricFamily) []*clientmodel.MetricFamily {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	j := len(families)

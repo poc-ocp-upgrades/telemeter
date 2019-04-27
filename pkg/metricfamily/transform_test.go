@@ -9,6 +9,8 @@ import (
 func family(name string, timestamps ...int64) *clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	families := &clientmodel.MetricFamily{Name: &name}
 	for i := range timestamps {
 		families.Metric = append(families.Metric, &clientmodel.Metric{TimestampMs: &timestamps[i]})
@@ -18,9 +20,13 @@ func family(name string, timestamps ...int64) *clientmodel.MetricFamily {
 func metric(timestamp int64) *clientmodel.Metric {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &clientmodel.Metric{TimestampMs: &timestamp}
 }
 func TestPack(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	a := family("A", 0)
@@ -41,6 +47,8 @@ func TestPack(t *testing.T) {
 	}
 }
 func TestPackMetrics(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tests := []struct {
@@ -66,6 +74,8 @@ func TestPackMetrics(t *testing.T) {
 	}
 }
 func TestMergeSort(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tests := []struct {

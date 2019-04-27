@@ -15,6 +15,8 @@ import (
 func NewSigner(issuer string, private crypto.PrivateKey) *Signer {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &Signer{iss: issuer, privateKey: private}
 }
 
@@ -24,6 +26,8 @@ type Signer struct {
 }
 
 func (j *Signer) GenerateToken(claims *jwt.Claims, privateClaims interface{}) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var alg jose.SignatureAlgorithm
@@ -53,6 +57,8 @@ func (j *Signer) GenerateToken(claims *jwt.Claims, privateClaims interface{}) (s
 func multipleErrors(errs []error) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(errs) > 1 {
 		return listErr(errs)
 	}
@@ -67,6 +73,8 @@ type listErr []error
 func (errs listErr) Error() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var messages []string
 	for _, err := range errs {
 		messages = append(messages, err.Error())
@@ -74,6 +82,8 @@ func (errs listErr) Error() string {
 	return "multiple errors: " + strings.Join(messages, ", ")
 }
 func now() time.Time {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return time.Now()

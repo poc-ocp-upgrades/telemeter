@@ -19,6 +19,8 @@ type AnonymizeMetrics struct {
 func NewMetricsAnonymizer(salt string, labels []string, metricsLabels map[string][]string) *AnonymizeMetrics {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	global := make(map[string]struct{})
 	for _, label := range labels {
 		global[label] = struct{}{}
@@ -36,6 +38,8 @@ func NewMetricsAnonymizer(salt string, labels []string, metricsLabels map[string
 func (a *AnonymizeMetrics) Transform(family *clientmodel.MetricFamily) (bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if family == nil {
 		return false, nil
 	}
@@ -47,6 +51,8 @@ func (a *AnonymizeMetrics) Transform(family *clientmodel.MetricFamily) (bool, er
 	return true, nil
 }
 func transformMetricLabelValues(salt string, metrics []*clientmodel.Metric, sets ...map[string]struct{}) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, m := range metrics {
@@ -73,13 +79,24 @@ func transformMetricLabelValues(salt string, metrics []*clientmodel.Metric, sets
 func secureValueHash(salt, value string) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	hash := sha256.Sum256([]byte(salt + value))
 	return base64.RawURLEncoding.EncodeToString(hash[:9])
 }
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

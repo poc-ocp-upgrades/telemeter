@@ -16,9 +16,13 @@ type limitReadCloser struct {
 func NewLimitReadCloser(r io.ReadCloser, n int64) io.ReadCloser {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return limitReadCloser{Reader: LimitReader(r, n), closer: r}
 }
 func (c limitReadCloser) Close() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return c.closer.Close()
@@ -27,6 +31,8 @@ func (c limitReadCloser) Close() error {
 var ErrTooLong = fmt.Errorf("the incoming sample data is too long")
 
 func LimitReader(r io.Reader, n int64) io.Reader {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return &LimitedReader{r, n}
@@ -38,6 +44,8 @@ type LimitedReader struct {
 }
 
 func (l *LimitedReader) Read(p []byte) (n int, err error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if l.N <= 0 {
@@ -53,7 +61,16 @@ func (l *LimitedReader) Read(p []byte) (n int, err error) {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

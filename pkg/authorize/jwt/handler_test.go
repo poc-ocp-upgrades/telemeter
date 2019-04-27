@@ -22,9 +22,13 @@ type statusCodeErr struct {
 func newStatusCodeErr(code int, err string) statusCodeErr {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return statusCodeErr{code: code, err: err}
 }
 func (e statusCodeErr) Error() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return e.err
@@ -32,9 +36,13 @@ func (e statusCodeErr) Error() string {
 func (e statusCodeErr) HTTPStatusCode() int {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return e.code
 }
 func newTestClusterAuthorizer(subject string, err error) authorize.ClusterAuthorizer {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return authorize.ClusterAuthorizerFunc(func(token, cluster string) (string, error) {
@@ -45,6 +53,8 @@ func newTestClusterAuthorizer(subject string, err error) authorize.ClusterAuthor
 type requestBuilder struct{ *http.Request }
 
 func (r requestBuilder) WithHeaders(kvs ...string) requestBuilder {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	r.Header = make(http.Header)
@@ -58,6 +68,8 @@ func (r requestBuilder) WithHeaders(kvs ...string) requestBuilder {
 func (r requestBuilder) WithForm(kvs ...string) requestBuilder {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	r.Form = make(url.Values)
 	for i := 0; i < len(kvs)/2; i++ {
 		k := kvs[i*2]
@@ -67,6 +79,8 @@ func (r requestBuilder) WithForm(kvs ...string) requestBuilder {
 	return r
 }
 func TestAuthorizeClusterHandler(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	partitionKey := "partitionKey"

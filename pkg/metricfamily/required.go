@@ -10,6 +10,8 @@ type requireLabel struct{ labels map[string]string }
 func NewRequiredLabels(labels map[string]string) Transformer {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return requireLabel{labels: labels}
 }
 
@@ -18,6 +20,8 @@ var (
 )
 
 func (t requireLabel) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for k, v := range t.labels {

@@ -10,6 +10,8 @@ import (
 func familyWithLabels(name string, labels ...[]*clientmodel.LabelPair) *clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	family := &clientmodel.MetricFamily{Name: &name}
 	time := int64(0)
 	for i := range labels {
@@ -18,6 +20,8 @@ func familyWithLabels(name string, labels ...[]*clientmodel.LabelPair) *clientmo
 	return family
 }
 func copyMetric(family *clientmodel.MetricFamily) *clientmodel.MetricFamily {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	metric := make([]*clientmodel.Metric, len(family.Metric))
@@ -29,6 +33,8 @@ func copyMetric(family *clientmodel.MetricFamily) *clientmodel.MetricFamily {
 func setNilMetric(family *clientmodel.MetricFamily, positions ...int) *clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	f := copyMetric(family)
 	for _, position := range positions {
 		f.Metric[position] = nil
@@ -36,6 +42,8 @@ func setNilMetric(family *clientmodel.MetricFamily, positions ...int) *clientmod
 	return f
 }
 func TestWhitelist(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	type checkFunc func(family *clientmodel.MetricFamily, ok bool, err error) error
@@ -87,6 +95,8 @@ func TestWhitelist(t *testing.T) {
 	}
 }
 func mustMakeWhitelist(t *testing.T, rules []string) Transformer {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	w, err := NewWhitelist(rules)

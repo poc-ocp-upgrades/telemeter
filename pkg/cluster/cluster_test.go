@@ -23,9 +23,13 @@ type testStore struct {
 func (s *testStore) ReadMetrics(ctx context.Context, minTimestampMs int64) ([]*store.PartitionedMetrics, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return nil, s.readErr
 }
 func (s *testStore) WriteMetrics(_ context.Context, p *store.PartitionedMetrics) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	s.partitionKey = p.PartitionKey
@@ -44,9 +48,13 @@ type testMemberlister struct {
 func (l *testMemberlister) Members() []*memberlist.Node {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return l.members
 }
 func (l *testMemberlister) NumMembers() int {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return l.numMembers
@@ -54,9 +62,13 @@ func (l *testMemberlister) NumMembers() int {
 func (l *testMemberlister) Join([]string) (int, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return 0, nil
 }
 func (l *testMemberlister) SendReliable(n *memberlist.Node, payload []byte) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	l.sendReliableNode = n
@@ -64,6 +76,8 @@ func (l *testMemberlister) SendReliable(n *memberlist.Node, payload []byte) erro
 	return l.sendReliableErr
 }
 func TestWriteMetrics(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	pr := prometheus.NewRegistry()

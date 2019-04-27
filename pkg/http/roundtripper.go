@@ -20,9 +20,13 @@ type bearerRoundTripper struct {
 func NewBearerRoundTripper(token string, rt http.RoundTripper) http.RoundTripper {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &bearerRoundTripper{token: token, wrapper: rt}
 }
 func (rt *bearerRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", rt.token))
@@ -34,9 +38,13 @@ type debugRoundTripper struct{ next http.RoundTripper }
 func NewDebugRoundTripper(next http.RoundTripper) *debugRoundTripper {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &debugRoundTripper{next}
 }
 func (rt *debugRoundTripper) RoundTrip(req *http.Request) (res *http.Response, err error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	reqd, _ := httputil.DumpRequest(req, false)
@@ -52,6 +60,8 @@ func (rt *debugRoundTripper) RoundTrip(req *http.Request) (res *http.Response, e
 	return
 }
 func bodyToString(body *io.ReadCloser) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if *body == nil {

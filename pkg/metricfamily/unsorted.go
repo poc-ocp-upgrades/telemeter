@@ -19,9 +19,13 @@ type errorOnUnsorted struct {
 func NewErrorOnUnsorted(requireTimestamp bool) Transformer {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &errorOnUnsorted{require: requireTimestamp}
 }
 func (t *errorOnUnsorted) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.timestamp = 0

@@ -19,6 +19,8 @@ import (
 func family(name string, timestamps ...int64) *clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	families := &clientmodel.MetricFamily{Name: &name}
 	for i := range timestamps {
 		one := float64(1)
@@ -33,6 +35,8 @@ func family(name string, timestamps ...int64) *clientmodel.MetricFamily {
 func storeWithData(data map[string][]*clientmodel.MetricFamily) store.Store {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	s := memstore.New(10 * time.Minute)
 	for k, v := range data {
 		err := s.WriteMetrics(context.TODO(), &store.PartitionedMetrics{PartitionKey: k, Families: v})
@@ -43,6 +47,8 @@ func storeWithData(data map[string][]*clientmodel.MetricFamily) store.Store {
 	return s
 }
 func TestServer_Get(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	type fields struct {
@@ -84,6 +90,8 @@ func TestServer_Get(t *testing.T) {
 func familiesToText(families []*clientmodel.MetricFamily) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	buf := &bytes.Buffer{}
 	for _, f := range families {
 		_, _ = expfmt.MetricFamilyToText(buf, f)
@@ -91,6 +99,8 @@ func familiesToText(families []*clientmodel.MetricFamily) string {
 	return buf.String()
 }
 func read(r io.Reader) ([]*clientmodel.MetricFamily, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	decoder := expfmt.NewDecoder(r, expfmt.FmtText)

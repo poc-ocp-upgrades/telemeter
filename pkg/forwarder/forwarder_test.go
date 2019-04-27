@@ -14,6 +14,8 @@ import (
 func TestNew(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	from, err := url.Parse("https://redhat.com")
 	if err != nil {
 		t.Fatalf("failed to parse `from` URL: %v", err)
@@ -41,6 +43,8 @@ func TestNew(t *testing.T) {
 	}
 }
 func TestReconfigure(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	from, err := url.Parse("https://redhat.com")
@@ -71,6 +75,8 @@ func TestReconfigure(t *testing.T) {
 	}
 }
 func TestRun(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	c := Config{From: &url.URL{}}
@@ -117,6 +123,8 @@ func TestRun(t *testing.T) {
 type fakeRoundTripper struct{ fn func(*http.Request) }
 
 func (frt *fakeRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	frt.fn(req)
