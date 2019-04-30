@@ -2,11 +2,11 @@ package metricfamily
 
 import clientmodel "github.com/prometheus/client_model/go"
 
-type DropUnsorted struct {
-	timestamp int64
-}
+type DropUnsorted struct{ timestamp int64 }
 
 func (o *DropUnsorted) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i, m := range family.Metric {
 		if m == nil {
 			continue

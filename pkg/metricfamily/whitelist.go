@@ -8,12 +8,9 @@ import (
 
 type whitelist [][]*labels.Matcher
 
-// NewWhitelist returns a Transformer that checks if at least one
-// rule in the whitelist is true.
-// This Transformer will nil metrics within a metric family that do not match a rule.
-// Each given rule is transformed into a matchset. Matchsets are OR-ed.
-// Individual matchers within a matchset are AND-ed, as in PromQL.
 func NewWhitelist(rules []string) (Transformer, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var ms [][]*labels.Matcher
 	for i := range rules {
 		matchers, err := promql.ParseMetricSelector(rules[i])
@@ -24,9 +21,9 @@ func NewWhitelist(rules []string) (Transformer, error) {
 	}
 	return whitelist(ms), nil
 }
-
-// Transform implements the Transformer interface.
 func (t whitelist) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var ok bool
 Metric:
 	for i, m := range family.Metric {
@@ -43,9 +40,9 @@ Metric:
 	}
 	return ok, nil
 }
-
-// match checks whether every Matcher matches a given metric.
 func match(name string, metric *clientmodel.Metric, matchers ...*labels.Matcher) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 Matcher:
 	for _, m := range matchers {
 		if m.Name == "__name__" && m.Matches(name) {

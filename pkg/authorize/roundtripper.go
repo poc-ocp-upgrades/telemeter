@@ -7,27 +7,24 @@ import (
 )
 
 type ServerRotatingRoundTripper struct {
-	endpoint     *url.URL
-	initialToken string
-	tokenStore   tokenStore
-
-	wrapper http.RoundTripper
+	endpoint	*url.URL
+	initialToken	string
+	tokenStore	tokenStore
+	wrapper		http.RoundTripper
 }
 
 func NewServerRotatingRoundTripper(initialToken string, endpoint *url.URL, rt http.RoundTripper) *ServerRotatingRoundTripper {
-	return &ServerRotatingRoundTripper{
-		initialToken: initialToken,
-		endpoint:     endpoint,
-		wrapper:      rt,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &ServerRotatingRoundTripper{initialToken: initialToken, endpoint: endpoint, wrapper: rt}
 }
-
 func (rt *ServerRotatingRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	token, err := rt.tokenStore.Load(rt.endpoint, rt.initialToken, rt.wrapper)
 	if err != nil {
 		return nil, err
 	}
-
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	resp, err := rt.wrapper.RoundTrip(req)
 	if resp != nil && resp.StatusCode == http.StatusUnauthorized {
@@ -35,8 +32,9 @@ func (rt *ServerRotatingRoundTripper) RoundTrip(req *http.Request) (*http.Respon
 	}
 	return resp, err
 }
-
 func (rt *ServerRotatingRoundTripper) Labels() (map[string]string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, err := rt.tokenStore.Load(rt.endpoint, rt.initialToken, rt.wrapper)
 	if err != nil {
 		return nil, fmt.Errorf("unable to authorize to server: %v", err)

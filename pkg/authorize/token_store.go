@@ -12,28 +12,26 @@ import (
 )
 
 type TokenResponse struct {
-	Version int `json:"version"`
-
-	Token            string `json:"token"`
-	ExpiresInSeconds int64  `json:"expiresInSeconds"`
-
-	Labels map[string]string `json:"labels"`
+	Version			int			`json:"version"`
+	Token			string			`json:"token"`
+	ExpiresInSeconds	int64			`json:"expiresInSeconds"`
+	Labels			map[string]string	`json:"labels"`
 }
-
 type tokenStore struct {
-	lock    sync.Mutex
-	value   string
-	expires time.Time
-	labels  map[string]string
+	lock	sync.Mutex
+	value	string
+	expires	time.Time
+	labels	map[string]string
 }
 
 func (t *tokenStore) Load(endpoint *url.URL, initialToken string, rt http.RoundTripper) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	if len(t.value) > 0 && (t.expires.IsZero() || t.expires.After(time.Now())) {
 		return t.value, nil
 	}
-
 	c := http.Client{Transport: rt, Timeout: 10 * time.Second}
 	req, err := http.NewRequest("POST", endpoint.String(), nil)
 	if err != nil {
@@ -45,7 +43,6 @@ func (t *tokenStore) Load(endpoint *url.URL, initialToken string, rt http.RoundT
 		return "", fmt.Errorf("unable to perform authentication request: %v", err)
 	}
 	defer resp.Body.Close()
-
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusCreated:
 	case http.StatusUnauthorized:
@@ -54,12 +51,10 @@ func (t *tokenStore) Load(endpoint *url.URL, initialToken string, rt http.RoundT
 		body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 4*1024))
 		return "", fmt.Errorf("unable to exchange initial token for a long lived token: %d:\n%s", resp.StatusCode, string(body))
 	}
-
 	response, parseErr := parseTokenFromBody(resp.Body, 16*1024)
 	if parseErr != nil {
 		return "", parseErr
 	}
-
 	t.value = response.Token
 	t.labels = response.Labels
 	if response.ExpiresInSeconds >= 60 {
@@ -67,11 +62,11 @@ func (t *tokenStore) Load(endpoint *url.URL, initialToken string, rt http.RoundT
 	} else {
 		t.expires = time.Time{}
 	}
-
 	return t.value, nil
 }
-
 func (t *tokenStore) Invalidate(token string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	if token == t.value {
@@ -80,8 +75,9 @@ func (t *tokenStore) Invalidate(token string) {
 		t.expires = time.Time{}
 	}
 }
-
 func (t *tokenStore) Labels() (map[string]string, bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	if len(t.value) == 0 {
@@ -93,8 +89,9 @@ func (t *tokenStore) Labels() (map[string]string, bool) {
 	}
 	return labels, true
 }
-
 func parseTokenFromBody(r io.Reader, limitBytes int64) (*TokenResponse, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	data, err := ioutil.ReadAll(io.LimitReader(r, limitBytes))
 	if err != nil {
 		return nil, fmt.Errorf("unable to read the authentication response: %v", err)

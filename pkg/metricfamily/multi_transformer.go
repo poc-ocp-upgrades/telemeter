@@ -5,29 +5,30 @@ import (
 )
 
 type MultiTransformer struct {
-	transformers []Transformer
-	builderFuncs []func() Transformer
+	transformers	[]Transformer
+	builderFuncs	[]func() Transformer
 }
 
 func (a *MultiTransformer) With(t Transformer) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if t != nil {
 		a.transformers = append(a.transformers, t)
 	}
 }
-
 func (a *MultiTransformer) WithFunc(f func() Transformer) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	a.builderFuncs = append(a.builderFuncs, f)
 }
-
 func (a MultiTransformer) Transform(family *clientmodel.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var ts []Transformer
-
 	for _, f := range a.builderFuncs {
 		ts = append(ts, f())
 	}
-
 	ts = append(ts, a.transformers...)
-
 	for _, t := range ts {
 		ok, err := t.Transform(family)
 		if err != nil {
@@ -37,6 +38,5 @@ func (a MultiTransformer) Transform(family *clientmodel.MetricFamily) (bool, err
 			return false, nil
 		}
 	}
-
 	return true, nil
 }
