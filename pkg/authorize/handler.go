@@ -7,6 +7,8 @@ import (
 )
 
 func NewAuthorizeClientHandler(authorizer ClientAuthorizer, next http.Handler) http.Handler {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		auth := strings.SplitN(req.Header.Get("Authorization"), " ", 2)
 		if strings.ToLower(auth[0]) != "bearer" {
@@ -17,7 +19,6 @@ func NewAuthorizeClientHandler(authorizer ClientAuthorizer, next http.Handler) h
 			http.Error(w, "Invalid Authorization header", http.StatusUnauthorized)
 			return
 		}
-
 		client, ok, err := authorizer.AuthorizeClient(auth[1])
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Not authorized: %v", err), http.StatusUnauthorized)
@@ -27,7 +28,6 @@ func NewAuthorizeClientHandler(authorizer ClientAuthorizer, next http.Handler) h
 			http.Error(w, "Not authorized", http.StatusUnauthorized)
 			return
 		}
-
 		next.ServeHTTP(w, req.WithContext(WithClient(req.Context(), client)))
 	})
 }

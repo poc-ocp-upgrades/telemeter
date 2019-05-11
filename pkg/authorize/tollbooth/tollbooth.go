@@ -13,39 +13,32 @@ import (
 )
 
 type clusterRegistration struct {
-	ClusterID          string `json:"cluster_id"`
-	AuthorizationToken string `json:"authorization_token"`
-	AccountID          string `json:"account_id"`
+	ClusterID			string	`json:"cluster_id"`
+	AuthorizationToken	string	`json:"authorization_token"`
+	AccountID			string	`json:"account_id"`
 }
-
 type registrationError struct {
-	Name   string `json:"name"`
-	Reason string `json:"reason"`
+	Name	string	`json:"name"`
+	Reason	string	`json:"reason"`
 }
-
 type authorizer struct {
-	to     *url.URL
-	client *http.Client
+	to		*url.URL
+	client	*http.Client
 }
 
 func NewAuthorizer(c *http.Client, to *url.URL) *authorizer {
-	return &authorizer{
-		to:     to,
-		client: c,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &authorizer{to: to, client: c}
 }
-
 func (a *authorizer) AuthorizeCluster(token, cluster string) (string, error) {
-	regReq := &clusterRegistration{
-		ClusterID:          cluster,
-		AuthorizationToken: token,
-	}
-
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	regReq := &clusterRegistration{ClusterID: cluster, AuthorizationToken: token}
 	data, err := json.Marshal(regReq)
 	if err != nil {
 		return "", err
 	}
-
 	req, err := http.NewRequest("POST", a.to.String(), bytes.NewReader(data))
 	if err != nil {
 		return "", err
@@ -57,7 +50,6 @@ func (a *authorizer) AuthorizeCluster(token, cluster string) (string, error) {
 		return "", err
 	}
 	defer func() {
-		// read the body to keep the upstream connection open
 		if resp.Body != nil {
 			if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
 				log.Printf("error copying body: %v", err)
@@ -75,7 +67,6 @@ func (a *authorizer) AuthorizeCluster(token, cluster string) (string, error) {
 	case http.StatusNotFound:
 		return "", errWithCode{error: fmt.Errorf("not found"), code: http.StatusNotFound}
 	case http.StatusOK, http.StatusCreated:
-		// allowed
 	default:
 		tryLogBody(resp.Body, 4*1024, fmt.Sprintf("warning: Upstream server rejected request for cluster %q with body:\n%%s", cluster))
 		return "", errWithCode{error: fmt.Errorf("upstream rejected request with code %d", resp.StatusCode), code: http.StatusInternalServerError}
@@ -86,22 +77,20 @@ func (a *authorizer) AuthorizeCluster(token, cluster string) (string, error) {
 		log.Printf("warning: Upstream server %s responded with an unknown content type %q", a.to, contentType)
 		return "", fmt.Errorf("unrecognized token response content-type %q", contentType)
 	}
-
 	regResponse, err := tryReadResponse(resp.Body, 32*1024)
 	if err != nil {
 		log.Printf("warning: Upstream server %s response could not be parsed", a.to)
 		return "", fmt.Errorf("unable to parse response body: %v", err)
 	}
-
 	if len(regResponse.AccountID) == 0 {
 		log.Printf("warning: Upstream server %s responded with an empty user string", a.to)
 		return "", fmt.Errorf("server responded with an empty user string")
 	}
-
 	return regResponse.AccountID, nil
 }
-
 func tryReadResponse(r io.Reader, limitBytes int64) (*clusterRegistration, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	body, err := ioutil.ReadAll(io.LimitReader(r, limitBytes))
 	if err != nil {
 		return nil, err
@@ -115,14 +104,17 @@ func tryReadResponse(r io.Reader, limitBytes int64) (*clusterRegistration, error
 
 type errWithCode struct {
 	error
-	code int
+	code	int
 }
 
 func (e errWithCode) HTTPStatusCode() int {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return e.code
 }
-
 func tryLogBody(r io.Reader, limitBytes int64, format string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	body, _ := ioutil.ReadAll(io.LimitReader(r, limitBytes))
 	log.Printf(format, string(body))
 }

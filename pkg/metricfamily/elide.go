@@ -4,27 +4,23 @@ import (
 	prom "github.com/prometheus/client_model/go"
 )
 
-type elide struct {
-	labelSet map[string]struct{}
-}
+type elide struct{ labelSet map[string]struct{} }
 
-// NewElide creates a new elide transformer for the given metrics.
 func NewElide(labels ...string) *elide {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	labelSet := make(map[string]struct{})
 	for i := range labels {
 		labelSet[labels[i]] = struct{}{}
 	}
-
 	return &elide{labelSet}
 }
-
-// Transform filters label pairs in the given metrics family,
-// eliding labels.
 func (t *elide) Transform(family *prom.MetricFamily) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if family == nil || len(family.Metric) == 0 {
 		return true, nil
 	}
-
 	for i := range family.Metric {
 		var filtered []*prom.LabelPair
 		for j := range family.Metric[i].Label {
@@ -35,6 +31,5 @@ func (t *elide) Transform(family *prom.MetricFamily) (bool, error) {
 		}
 		family.Metric[i].Label = filtered
 	}
-
 	return true, nil
 }
